@@ -1,8 +1,7 @@
-// src/components/Terminal.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { portfolioContent } from '../data/content';
+import { portfolioContent } from '@/data/content';
 
 type Page = 'home' | 'about' | 'projects' | 'skills' | 'contact';
 
@@ -127,7 +126,7 @@ export default function Terminal() {
             {portfolioContent.welcome}
           </div>
           <div className="text-yellow-400 mb-2">
-            Type "help" to see available commands
+            Type &quot;help&quot; to see available commands
           </div>
         </div>
       );

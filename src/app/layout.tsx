@@ -1,6 +1,8 @@
-// src/app/layout.tsx
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Portfolio - Software Developer',
@@ -15,13 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <script 
-          type="module" 
-          src="https://unpkg.com/@splinetool/viewer@1.0.52/build/spline-viewer.js"
-        />
-      </head>
-      <body>{children}</body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }

@@ -1,91 +1,182 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { portfolioContent } from '@/data/content';
 
 type Page = 'home' | 'about' | 'projects' | 'skills' | 'contact';
 
-export default function Terminal() {
+interface HistoryEntry {
+  command: string;
+  output: string;
+  isTyping?: boolean;
+}
+
+interface TerminalProps {
+  onTypingChange?: (typing: boolean) => void;
+}
+
+
+
+const Terminal = forwardRef<any, TerminalProps>(({ onTypingChange }, ref) => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [input, setInput] = useState('');
-  const [history, setHistory] = useState<Array<{command: string; output: string}>>([]);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [isTyping, setIsTyping] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const [showWelcome, setShowWelcome] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
   const commands = {
     help: () => `Available commands:
-├── about     - View about section
-├── projects  - View my projects  
-├── skills    - View skills & technologies
-├── contact   - View contact information
-├── clear     - Clear terminal
-├── back      - Return to main menu
-└── help      - Show this help message`,
-    
+about       - Learn about me
+projects    - View my projects
+skills      - See my technical skills
+experience  - My work experience
+contact     - How to reach me
+education   - My educational background
+leadership  - Leadership and community involvement
+sudo        - Execute with superuser powers (use with caution!)
+clear       - Clear the terminal
+
+
+Type any command to continue...`,
+
+
+
+
     about: () => {
       setCurrentPage('about');
       return portfolioContent.about;
     },
-    
+
     projects: () => {
       setCurrentPage('projects');
       return portfolioContent.projects;
     },
-    
+
     skills: () => {
       setCurrentPage('skills');
       return portfolioContent.skills;
     },
-    
+
     contact: () => {
       setCurrentPage('contact');
       return portfolioContent.contact;
     },
-    
+
+    experience: () => {
+      setCurrentPage('about');
+      return portfolioContent.experience || portfolioContent.about;
+    },
+
+    education: () => {
+      setCurrentPage('about');
+      return portfolioContent.education || portfolioContent.about;
+    },
+
+    // certifications: () => {
+    //   setCurrentPage('skills');
+    //   return portfolioContent.certifications || portfolioContent.skills;
+    // },
+
+    leadership: () => {
+      setCurrentPage('about');
+      return portfolioContent.leadership || portfolioContent.about;
+    },
+
+    sudo: () => {
+      return "Nice try! But you don't have sudo privileges here ;)";
+    },
+
     clear: () => {
       setHistory([]);
+      setShowWelcome(false);
+      setTimeout(() => setShowWelcome(true), 100);
       return '';
-    },
-    
-    back: () => {
-      setCurrentPage('home');
-      return 'Returned to main menu. Type "help" to see available commands.';
     }
+  };
+
+  // Faster typewriter effect (5ms instead of 20ms)
+  const typeWriter = (text: string, callback?: () => void) => {
+    setIsTyping(true);
+    if (onTypingChange) onTypingChange(true);
+    setDisplayedText('');
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        setDisplayedText(prev => prev + text.charAt(i));
+        i++;
+      } else {
+        clearInterval(timer);
+        setIsTyping(false);
+        if (onTypingChange) onTypingChange(false);
+        if (callback) callback();
+      }
+    }, 5); // Increased speed from 20ms to 5ms
   };
 
   const executeCommand = (cmd: string) => {
     const command = cmd.trim().toLowerCase();
     if (commands[command as keyof typeof commands]) {
       const output = commands[command as keyof typeof commands]();
-      if (output) {
-        setHistory(prev => [...prev, { command: cmd, output }]);
+      if (output && command !== 'clear') {
+        const newEntry: HistoryEntry = { command: cmd, output, isTyping: true };
+        setHistory(prev => [...prev, newEntry]);
+
+        typeWriter(output, () => {
+          setHistory(prev =>
+            prev.map(entry =>
+              entry === newEntry ? { ...entry, isTyping: false } : entry
+            )
+          );
+        });
       }
     } else if (command === '') {
       return;
     } else {
-      setHistory(prev => [...prev, { 
-        command: cmd, 
-        output: `Command not found: ${cmd}. Type "help" for available commands.` 
-      }]);
+      const errorMsg = ` Command not found: ${cmd}. Type "help" for available commands.`;
+      const newEntry: HistoryEntry = { command: cmd, output: errorMsg, isTyping: true };
+      setHistory(prev => [...prev, newEntry]);
+
+      typeWriter(errorMsg, () => {
+        setHistory(prev =>
+          prev.map(entry =>
+            entry === newEntry ? { ...entry, isTyping: false } : entry
+          )
+        );
+      });
     }
-    
+
     if (command !== 'clear') {
       setCommandHistory(prev => [...prev, cmd]);
     }
     setHistoryIndex(-1);
   };
 
+  useImperativeHandle(ref, () => ({
+    executeCommand
+  }));
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (input.trim()) {
+    if (input.trim() && !isTyping) {
       executeCommand(input);
       setInput('');
     }
+    // Keep focus on input after submission
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 10);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (isTyping) return;
+
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (historyIndex < commandHistory.length - 1) {
@@ -106,87 +197,123 @@ export default function Terminal() {
     }
   };
 
+  
+
+  // Keep terminal focused
+  useEffect(() => {
+    const focusInput = () => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    };
+
+    document.addEventListener('click', focusInput);
+    window.addEventListener('focus', focusInput);
+
+    return () => {
+      document.removeEventListener('click', focusInput);
+      window.removeEventListener('focus', focusInput);
+    };
+  }, []);
+
   useEffect(() => {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
-  }, [history]);
+  }, [history, displayedText]);
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
+    setShowWelcome(true);
   }, []);
 
-  const getPageContent = () => {
-    if (currentPage === 'home') {
-      return (
-        <div className="mb-4 text-green-400">
-          <div className="mb-4">
-            {portfolioContent.welcome}
-          </div>
-          <div className="text-yellow-400 mb-2">
-            Type &quot;help&quot; to see available commands
-          </div>
+  const getWelcomeContent = () => {
+    if (!showWelcome) return null;
+
+    return (
+      <div className="mb-6 terminal-mono mr-2">
+        <div className="text-white text-xl font-bold mb-2 ml-2">
+          Om R Gaikwad
         </div>
-      );
-    }
-    return null;
+        <div className="text-gray-400 mb-4">
+          Software Engineer
+        </div>
+        <div className="border-t border-green-500/30 mb-4"></div>
+        <div className="text-green-400 mb-2">
+        Hi, I'm Om.
+        </div>
+        <div className="text-gray-300 mb-4 leading-relaxed">
+          A Software Engineer with expertise in full-stack development, and AI integration.
+        </div>
+        <div className="text-green-400">
+          Welcome to my interactive 'AI powered' portfolio terminal!
+        </div>
+        <div>
+          Type "help" for available commands.
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div 
-      className="bg-black text-green-400 font-mono h-full p-6 overflow-hidden flex flex-col"
+    <div
+      className="bg-black text-green-400 h-full flex flex-col terminal-mono"
       onClick={() => inputRef.current?.focus()}
     >
-      <div className="text-yellow-400 mb-4 border-b border-gray-700 pb-2">
-        <div className="flex items-center justify-between">
-          <span>portfolio@terminal:~${currentPage}</span>
-          <span className="text-xs">[Ctrl+C to exit]</span>
-        </div>
-      </div>
-
-      <div 
+      {/* Terminal Content */}
+      <div
         ref={terminalRef}
-        className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600"
+        className="flex-1 overflow-y-auto px-6 py-4 space-y-4 pb-20 terminal-scroll"
       >
-        {getPageContent()}
-        
+        {getWelcomeContent()}
+
         {history.map((entry, index) => (
-          <div key={index} className="mb-4">
-            <div className="text-yellow-400">
+          <div key={index}>
+            <div className="flex items-center terminal-prompt">
               <span className="text-blue-400">user@portfolio</span>
               <span className="text-white">:</span>
-              <span className="text-purple-400">~</span>
-              <span className="text-white">$ </span>
-              {entry.command}
+              <span className="text-yellow-400">~</span>
+              <span className="text-green-400">$ </span>
+              <span className="text-white">{entry.command}</span>
             </div>
-            <div className="mt-1 whitespace-pre-wrap text-green-300">
-              {entry.output}
+            <div className="mt-2 text-gray-300 whitespace-pre-wrap terminal-mono">
+              {entry.isTyping ? displayedText : entry.output}
+              {entry.isTyping && <span className="animate-pulse">|</span>}
             </div>
           </div>
         ))}
-      </div>
 
-      <form onSubmit={handleSubmit} className="mt-4 flex-shrink-0">
-        <div className="flex items-center">
+        {/* Current Input Display */}
+        <div className="flex items-center terminal-prompt">
           <span className="text-blue-400">user@portfolio</span>
           <span className="text-white">:</span>
-          <span className="text-purple-400">~</span>
-          <span className="text-white">$ </span>
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="bg-transparent text-green-400 outline-none flex-1 ml-1 caret-green-400"
-            autoComplete="off"
-            spellCheck="false"
-          />
+          <span className="text-yellow-400">~</span>
+          <span className="text-green-400">$</span>
+          <span className="text-green-400 ml-2">{input}</span>
           <span className="animate-pulse text-green-400">|</span>
         </div>
+      </div>
+
+      {/* Hidden Input for capturing keystrokes */}
+      <form onSubmit={handleSubmit} className="absolute -left-96">
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="opacity-0"
+          autoComplete="off"
+          spellCheck="false"
+          disabled={isTyping}
+        />
       </form>
     </div>
   );
-}
+});
+
+Terminal.displayName = 'Terminal';
+
+export default Terminal;

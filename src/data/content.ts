@@ -1,199 +1,166 @@
 // src/data/content.ts
 export const portfolioContent = {
-  welcome: `
-╔══════════════════════════════════════════════════════════════╗
-║                    WELCOME TO MY PORTFOLIO                   ║
-║                                                              ║
-║  Hi! I'm a Software Developer passionate about creating      ║
-║  innovative solutions and beautiful user experiences.        ║
-║                                                              ║
-║  Navigate through my portfolio using terminal commands:      ║
-║  • Type commands to explore different sections              ║
-║  • Use arrow keys to navigate command history               ║
-║  • All interactions are keyboard-driven for that            ║
-║    authentic developer experience                           ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝`,
+  welcome: `Om R Gaikwad - Software Engineer`,
 
-  about: `
-═══════════════════════════════════════════════════════════ ════
-                              ABOUT ME                          
-═══════════════════════════════════════════════════════════════
+  about: `Hello, I'm Om R Gaikwad!
 
-👨‍💻 Background & Journey
-────────────────────────
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do 
-eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut 
-enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+I'm a Software Engineer with expertise in full-stack development, enterprise applications, and AI/ML integration.
 
-Started my journey in software development 3 years ago, driven by
-curiosity and passion for problem-solving. Transitioned from a 
-different field after discovering the joy of creating digital 
-solutions that make people's lives easier.
+Background:
+- Currently working as a React TypeScript & SharePoint Framework (SPFx) developer at Cubiclogics
+- Previously developed enterprise applications using React & Java Spring Boot at Oneshell
+- Specialized in building modern web applications, collaborative tools, and AI-powered solutions
+- Winner of multiple hackathons including Hack for Hire 2024 and RRCE Web Designing competition
+- Pursuing M.C.A with specialization in Data Analytics from PES University
+- Strong foundation in React, TypeScript, Python, and enterprise technologies
 
-🚀 What Drives Me
-─────────────────
-• Building scalable and maintainable applications
-• Learning new technologies and staying updated with trends  
-• Collaborating with teams to deliver exceptional products
-• Contributing to open-source projects and the dev community
+My passion lies in creating innovative solutions that solve real-world problems, from autonomous AI agents to collaborative development platforms.
 
-🎯 Current Focus
-────────────────
-• Mastering modern web development frameworks
-• Exploring cloud architecture and DevOps practices
-• Contributing to open-source projects
-• Building my personal brand and network
+Feel free to explore more using the 'projects', 'skills', or 'contact' commands!`,
 
-🌟 Personal Interests
-─────────────────────
-When I'm not coding, you'll find me reading tech blogs, 
-playing chess, hiking, or experimenting with new recipes.
-I believe in maintaining a healthy work-life balance.
+  projects: `🚀 Projects:
 
-Type "back" to return to main menu.`,
+1. Autonomous RL Agent for FPS Games (ARLA)
+   Developed autonomous RL agent using PPO algorithm to play DOOM
+   Technologies: Python, Reinforcement Learning, ViZDoom, PPO
+   Features: Custom game environment, Multiplayer support (8 players), Real-time AI decision-making
 
-  projects: `
-═══════════════════════════════════════════════════════════════
-                            MY PROJECTS                         
-═══════════════════════════════════════════════════════════════
+2. IntelHub - Collaborative Project Management
+   Git-like version control system with branch/merge functionality
+   Technologies: React, Flask, MongoDB, JWT, WebSocket
+   Features: Real-time collaborative IDE, Role-based access control, 2-click rollback system
 
-🚀 Featured Projects
-────────────────────
+3. College ERP Management System
+   Academic management system using Django's MVT architecture
+   Technologies: Django, SQLite, HTML/CSS, JavaScript
+   Features: Attendance tracking, Grade management, Role-based access control`,
 
-[1] E-Commerce Platform
-    ├── Description: Full-stack e-commerce solution with modern UI
-    ├── Tech Stack: Next.js, TypeScript, PostgreSQL, Stripe
-    ├── Features: 
-    │   • User authentication & authorization
-    │   • Product catalog with search & filters
-    │   • Shopping cart & checkout process  
-    │   • Admin dashboard for inventory management
-    │   • Payment integration with Stripe
-    └── Status: Live • GitHub: /repo-link • Demo: /live-demo
+ skills: `💻 Technical Skills:
 
-[2] Task Management Dashboard  
-    ├── Description: Collaborative project management tool
-    ├── Tech Stack: React, Node.js, MongoDB, Socket.io
-    ├── Features:
-    │   • Real-time collaboration
-    │   • Drag & drop task management
-    │   • Team member assignments
-    │   • Progress tracking & analytics
-    │   • File uploads & commenting system
-    └── Status: In Development • GitHub: /repo-link
+Programming Languages:
+- JavaScript/TypeScript
+- Python
+- Java
+- SQL
 
-💡 Other Notable Projects
-─────────────────────────
-• Weather App - React Native mobile application
-• Portfolio Website - This terminal-based portfolio
-• API Wrapper - RESTful API for third-party service
-• Chrome Extension - Productivity tool for developers
+Frontend:
+- React/TypeScript
+- HTML5/CSS3
+- Bootstrap/Tailwind
+- SharePoint Framework
 
-🎯 Hackathon Participation
-──────────────────────────
-• TechFest 2024 - 2nd Place (AI-powered study assistant)
-• CodeJam 2023 - Finalist (Sustainability tracking app)
+Backend:
+- Flask/Django
+- Spring Boot
+- MongoDB/SQLite
+- REST APIs`,
 
-Type "back" to return to main menu.`,
+  contact: `📞 Get In Touch:
 
-  skills: `
-═══════════════════════════════════════════════════════════════
-                      SKILLS & TECHNOLOGIES                     
-═══════════════════════════════════════════════════════════════
+Email: om.gaikwad1024@gmail.com
+Phone: +91 6364416762
+GitHub: github.com/om-gaikwad1024
+LinkedIn: linkedin.com/in/om-gaikwad1024
 
-💻 Programming Languages
-────────────────────────
-JavaScript/TypeScript  ████████████████████ 95%
-Python                 ███████████████████░ 85%
-Java                   ████████████████░░░░ 75%
-C++                    ██████████████░░░░░░ 65%
-Go                     ████████░░░░░░░░░░░░ 45%
+Feel free to reach out!`,
 
-🌐 Frontend Development  
-───────────────────────
-React/Next.js          ████████████████████ 95%
-Vue.js                 ████████████████░░░░ 80%
-HTML5/CSS3             ████████████████████ 95%
-Tailwind CSS           ███████████████████░ 90%
-Sass/SCSS              ████████████████░░░░ 75%
+  experience: `💼 Work Experience:
 
-⚙️ Backend Development
-───────────────────────
-Node.js/Express        ███████████████████░ 90%
-Django/FastAPI         ████████████████░░░░ 75%
-RESTful APIs           ███████████████████░ 90%
-GraphQL                █████████████░░░░░░░ 60%
-Microservices          ████████████░░░░░░░░ 55%
+Cubiclogics | On-Campus Internship, React TypeScript, SPFX, Microsoft SharePoint (March 2025 – Present)
+- Developing SharePoint framework (SPFx) solutions using React TypeScript for enterprise applications
+- Building modern web parts and extensions for Microsoft SharePoint Online environments
+- Implementing responsive UI components following Microsoft Fluent Design System principles
 
-🗄️ Databases & Tools
-────────────────────
-PostgreSQL             ████████████████░░░░ 80%
-MongoDB                ███████████████░░░░░ 70%
-Redis                  ████████████░░░░░░░░ 55%
-Docker                 ████████████████░░░░ 75%
-AWS/GCP                █████████████░░░░░░░ 60%
+Oneshell | Off-Campus Internship, React & Java Spring Boot (Sep 2024 – Oct 2024)
+- Developed responsive front-end components using React for enterprise web applications
+- Supported back-end development using Spring Boot for REST API creation and maintenance
+- Collaborated with cross-functional teams in an Agile environment to deliver production-ready features
 
-🧰 Development Tools
-───────────────────
-Git/GitHub             ████████████████████ 95%
-VS Code                ████████████████████ 95%
-Postman                ███████████████████░ 85%
-Jest/Testing           ████████████████░░░░ 70%
-CI/CD                  ███████████░░░░░░░░░ 50%
+Type 'projects' to see my projects or 'skills' to view my technical skills.`,
 
-💡 Soft Skills
-──────────────
-• Problem-solving & analytical thinking
-• Team collaboration & communication  
-• Project management & time organization
-• Continuous learning mindset
-• Adaptability to new technologies
+  education: `Education & Learning:
 
-Type "back" to return to main menu.`,
+🎓 Master of Computer Applications (M.C.A)
+   └── PES University • 2023 - 2025
+   └── Specialization: Data Analytics
+   └── Focus: Advanced Software Development, Data Science, AI/ML
+   
+🎓 Bachelor of Computer Applications (B.C.A)
+   └── NRI Institute • 2020 - 2023
+   └── Foundation in Computer Science and Programming
+   
+📚 Specialized Learning:
+• Advanced Reinforcement Learning & AI
+• Enterprise Application Development
+• Modern Web Development Frameworks
+• Data Analytics and Visualization
 
-  contact: `
-═══════════════════════════════════════════════════════════════
-                          CONTACT INFO                          
-═══════════════════════════════════════════════════════════════
+📖 Current Learning Focus:
+• Advanced SharePoint Framework development
+• Enterprise-grade React TypeScript applications
+• Machine Learning in production environments`,
 
-📧 Let's Connect!
-─────────────────
-I'm always open to discussing new opportunities, collaborating
-on exciting projects, or just having a chat about technology.
+  certifications: `Certifications & Achievements:
 
-📫 Reach Out To Me
-──────────────────
-Email         your.email@example.com
-LinkedIn      linkedin.com/in/yourprofile  
-GitHub        github.com/yourusername
-Twitter       twitter.com/yourhandle
-Portfolio     yourportfolio.dev
+🏅 Competition Victories:
+• Hack for Hire Hackathon 2024 - 1st Place Winner
+• RRCE Hackathon 2024 - 1st Place Web Designing
 
-📍 Location
-───────────
-Based in: Your City, Country
-Timezone: UTC+X
-Available for remote work worldwide
+📋 Technical Proficiencies:
+• SharePoint Framework (SPFx) Development
+• Microsoft Fluent Design System Implementation
+• React TypeScript Enterprise Applications
+• Reinforcement Learning & AI Implementation
 
-💼 What I'm Looking For
-───────────────────────
-• Full-time software development roles
-• Freelance/contract opportunities  
-• Open-source collaboration
-• Mentorship opportunities
-• Speaking engagements at tech events
+🎯 Project Certifications:
+• Advanced AI/ML Project (ARLA) - Self-Implemented
+• Enterprise Application Development
+• Full-Stack Web Development
+• Collaborative Development Tools
 
-⚡ Quick Response Promise
-────────────────────────
-I typically respond to emails within 24 hours. For urgent 
-matters, LinkedIn DM is the fastest way to reach me.
+🏆 Skills Validation:
+• Multiple hackathon victories demonstrating problem-solving
+• Real-world internship experience in enterprise environments
+• Independent implementation of complex AI/ML algorithms
+• Production-ready application development
 
-🤝 Let's Build Something Amazing Together!
-──────────────────────────────────────────
-Whether you have a project idea, job opportunity, or just 
-want to connect with a fellow developer, I'd love to hear 
-from you. Don't hesitate to reach out!
+💡 Recognition:
+• Internship offers from competition sponsors
+• Proven track record in competitive programming environments
+• Strong portfolio of deployed applications and AI solutions`,
 
-Type "back" to return to main menu.`
+  leadership: `Leadership & Innovation:
+
+👥 Technical Leadership:
+
+🎯 Hackathon Leadership
+   └── Winner of Hack for Hire 2024 - Led solution development
+   └── Champion of RRCE Web Designing competition
+   └── Demonstrated ability to deliver under tight deadlines
+
+🎯 Independent Project Development
+   └── Led development of complex AI/ML solutions independently
+   └── Designed and implemented collaborative development platforms
+   └── Created enterprise-grade applications with modern architectures
+
+🎯 Innovation in AI/ML
+   └── Developed autonomous gaming AI using advanced RL algorithms
+   └── Created custom game environments for AI training
+   └── Implemented real-time AI decision-making systems
+
+🌟 Technical Impact:
+• Developed production-ready collaborative development tools
+• Created innovative AI solutions for gaming environments
+• Built enterprise applications used in real-world scenarios
+• Contributed to modern web development best practices
+
+🤝 Collaboration & Mentorship:
+• Agile team collaboration in professional environments
+• Knowledge sharing through project documentation
+• Peer collaboration in academic and professional settings
+
+💡 Philosophy:
+"Great leaders don't create followers, they create more leaders.
+I believe in empowering others through knowledge sharing and
+collaborative problem-solving."`
 };

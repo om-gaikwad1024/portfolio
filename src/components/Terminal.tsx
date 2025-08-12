@@ -15,9 +15,11 @@ interface TerminalProps {
   onTypingChange?: (typing: boolean) => void;
 }
 
+interface TerminalRef {
+  executeCommand: (cmd: string) => void;
+}
 
-
-const Terminal = forwardRef<any, TerminalProps>(({ onTypingChange }, ref) => {
+const Terminal = forwardRef<TerminalRef, TerminalProps>(({ onTypingChange }, ref) => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -41,11 +43,7 @@ leadership  - Leadership and community involvement
 sudo        - Execute with superuser powers (use with caution!)
 clear       - Clear the terminal
 
-
 Type any command to continue...`,
-
-
-
 
     about: () => {
       setCurrentPage('about');
@@ -69,26 +67,21 @@ Type any command to continue...`,
 
     experience: () => {
       setCurrentPage('about');
-      return portfolioContent.experience || portfolioContent.about;
+      return (portfolioContent as any).experience || portfolioContent.about;
     },
 
     education: () => {
       setCurrentPage('about');
-      return portfolioContent.education || portfolioContent.about;
+      return (portfolioContent as any).education || portfolioContent.about;
     },
-
-    // certifications: () => {
-    //   setCurrentPage('skills');
-    //   return portfolioContent.certifications || portfolioContent.skills;
-    // },
 
     leadership: () => {
       setCurrentPage('about');
-      return portfolioContent.leadership || portfolioContent.about;
+      return (portfolioContent as any).leadership || portfolioContent.about;
     },
 
     sudo: () => {
-      return "Nice try! But you don't have sudo privileges here ;)";
+      return "Nice try! But you don&apos;t have sudo privileges here ;)";
     },
 
     clear: () => {
@@ -137,7 +130,7 @@ Type any command to continue...`,
     } else if (command === '') {
       return;
     } else {
-      const errorMsg = ` Command not found: ${cmd}. Type "help" for available commands.`;
+      const errorMsg = ` Command not found: ${cmd}. Type &quot;help&quot; for available commands.`;
       const newEntry: HistoryEntry = { command: cmd, output: errorMsg, isTyping: true };
       setHistory(prev => [...prev, newEntry]);
 
@@ -197,8 +190,6 @@ Type any command to continue...`,
     }
   };
 
-  
-
   // Keep terminal focused
   useEffect(() => {
     const focusInput = () => {
@@ -242,16 +233,16 @@ Type any command to continue...`,
         </div>
         <div className="border-t border-green-500/30 mb-4"></div>
         <div className="text-green-400 mb-2">
-        Hi, I'm Om.
+        Hi, I&apos;m Om.
         </div>
         <div className="text-gray-300 mb-4 leading-relaxed">
           A Software Engineer with expertise in full-stack development, and AI integration.
         </div>
         <div className="text-green-400">
-          Welcome to my interactive 'AI powered' portfolio terminal!
+          Welcome to my interactive &apos;AI powered&apos; portfolio terminal!
         </div>
         <div>
-          Type "help" for available commands.
+          Type &quot;help&quot; for available commands.
         </div>
       </div>
     );

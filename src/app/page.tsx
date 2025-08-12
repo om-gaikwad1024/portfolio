@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import SplineViewer from '../components/SplineViewer';
 import Terminal from '../components/Terminal';
 
-type Page = 'home' | 'about' | 'projects' | 'skills' | 'contact';
 
 export default function Home() {
   const [currentTime, setCurrentTime] = useState<string>('');

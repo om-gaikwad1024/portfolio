@@ -81,7 +81,7 @@ Type any command to continue...`,
     },
 
     sudo: () => {
-      return "Nice try! But you don&apos;t have sudo privileges here ;)";
+      return "Nice try! But you dont have sudo privileges here ;)";
     },
 
     clear: () => {

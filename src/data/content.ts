@@ -42,18 +42,37 @@ Programming Languages:
 - Python
 - Java
 - SQL
+- HTML/CSS
 
 Frontend:
 - React/TypeScript
-- HTML5/CSS3
+- SharePoint Framework (SPFx)
 - Bootstrap/Tailwind
-- SharePoint Framework
+- Microsoft Fluent Design System
 
 Backend:
 - Flask/Django
 - Spring Boot
+- REST APIs
+- JWT Authentication
+
+Databases & Tools:
 - MongoDB/SQLite
-- REST APIs`,
+- Firebase
+- Git/GitHub
+- VS Code/IntelliJ
+
+Data Science & Analytics:
+- Pandas/NumPy
+- Matplotlib
+- Jupyter Notebook
+- Reinforcement Learning (PPO)
+
+Design & Development:
+- Figma/Canva
+- Unix Shell
+- WebSocket Communication
+- ViZDoom`,
 
   contact: `📞 Get In Touch:
 
@@ -83,7 +102,7 @@ Type 'projects' to see my projects or 'skills' to view my technical skills.`,
 🎓 Master of Computer Applications (M.C.A)
    └── PES University • 2023 - 2025
    └── Specialization: Data Analytics
-   └── Focus: Advanced Software Development, Data Science, AI/ML
+   └── Focus: Full Stack Development, Data Science, AI/ML
    
 🎓 Bachelor of Computer Applications (B.C.A)
    └── NRI Institute • 2020 - 2023
@@ -96,9 +115,8 @@ Type 'projects' to see my projects or 'skills' to view my technical skills.`,
 • Data Analytics and Visualization
 
 📖 Current Learning Focus:
-• Advanced SharePoint Framework development
-• Enterprise-grade React TypeScript applications
-• Machine Learning in production environments`,
+• Machine Learning in production environments
+• Enterprise-grade React TypeScript applications`,
 
   certifications: `Certifications & Achievements:
 

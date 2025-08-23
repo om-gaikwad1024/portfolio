@@ -130,7 +130,7 @@ Type any command to continue...`,
     } else if (command === '') {
       return;
     } else {
-      const errorMsg = ` Command not found: ${cmd}. Type &quot;help&quot; for available commands.`;
+      const errorMsg = ` Command not found: ${cmd}. Type help for available commands.`;
       const newEntry: HistoryEntry = { command: cmd, output: errorMsg, isTyping: true };
       setHistory(prev => [...prev, newEntry]);
 
@@ -225,7 +225,7 @@ Type any command to continue...`,
 
     return (
       <div className="mb-6 terminal-mono mr-2">
-        <div className="text-white text-xl font-bold mb-2 ml-2">
+        <div className="text-white text-xl font-bold">
           Om R Gaikwad
         </div>
         <div className="text-gray-400 mb-4">
@@ -239,7 +239,7 @@ Type any command to continue...`,
           A Software Engineer with expertise in full-stack development, and AI integration.
         </div>
         <div className="text-green-400">
-          Welcome to my interactive &apos;AI powered&apos; portfolio terminal!
+          Welcome to my interactive portfolio terminal!
         </div>
         <div>
           Type &quot;help&quot; for available commands.

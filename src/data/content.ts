@@ -180,5 +180,5 @@ Type 'projects' to see my projects or 'skills' to view my technical skills.`,
 💡 Philosophy:
 "Great leaders don't create followers, they create more leaders.
 I believe in empowering others through knowledge sharing and
-collaborative problem-solving."`
+collaborative problem solving."`
 };

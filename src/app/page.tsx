@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef } from 'react';
 import SplineViewer from '../components/SplineViewer';
 import Terminal from '../components/Terminal';
-
+import Desktop from '../components/Desktop';
 
 export default function Home() {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [isClient, setIsClient] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [isDesktopMode, setIsDesktopMode] = useState(false);
   const terminalRef = useRef<any>(null);
 
   useEffect(() => {
@@ -26,13 +27,17 @@ export default function Home() {
     }
   };
 
-  const commands = ['help', 'about', 'projects', 'skills', 'experience', 'contact', 'education', 'leadership', 'sudo', 'clear'];
+  const commands = ['help', 'about', 'projects', 'skills', 'experience', 'contact', 'education', 'leadership', 'clear'];
+
+  if (isDesktopMode) {
+    return <Desktop onSwitchToTerminal={() => setIsDesktopMode(false)} />;
+  }
 
   return (
     <div className="app-container">
       {/* Header */}
       <div className="app-header">
-        <div className="header-nav">
+        <div className="header-nav ">
           {commands.map(cmd => (
             <button
               key={cmd}
@@ -44,7 +49,15 @@ export default function Home() {
             </button>
           ))}
         </div>
-        <div className="header-info">[Ctrl+C to exit]</div>
+        <div className="header-info">
+          <button
+            onClick={() => setIsDesktopMode(true)}
+            className="px-4 py-2 bg-blue-800 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            style={{padding: '0.4rem'}}
+          >
+            Desktop Mode
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}

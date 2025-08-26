@@ -33,13 +33,13 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
     const handleIconClick = (appName: string) => {
         switch (appName) {
             case 'github':
-                window.open('https://github.com/yourusername', '_blank');
+                window.open('https://github.com/om-gaikwad1024', '_blank');
                 break;
             case 'linkedin':
-                window.open('https://linkedin.com/in/yourusername', '_blank');
+                window.open('https://linkedin.com/in/om-gaikwad1024', '_blank');
                 break;
             case 'email':
-                window.open('mailto:your.email@example.com');
+                window.open('mailto:your.om.gaikwad1024@gmail.com');
                 break;
             default:
                 openWindow(appName);

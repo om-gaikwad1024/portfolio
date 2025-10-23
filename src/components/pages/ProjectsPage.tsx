@@ -478,7 +478,8 @@ x
             These projects showcase my passion for building innovative solutions. Let's create something amazing together!
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
-            <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-8 rounded-xl hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-blue-500/20 transition-all border border-blue-400/30 transform hover:scale-105">
+            <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-8 rounded-xl hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-blue-500/20 transition-all border border-blue-400/30 transform hover:scale-105"
+            onClick={() => window.open('https://github.com/om-gaikwad1024', '_blank')}>
               View on GitHub 💻
             </button>
             <button className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold py-3 px-8 rounded-xl hover:from-emerald-600 hover:to-teal-700 shadow-lg hover:shadow-emerald-500/20 transition-all border border-emerald-400/30 transform hover:scale-105"

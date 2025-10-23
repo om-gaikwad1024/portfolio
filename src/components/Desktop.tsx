@@ -39,7 +39,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                 window.open('https://linkedin.com/in/om-gaikwad1024', '_blank');
                 break;
             case 'email':
-                window.open('mailto:your.om.gaikwad1024@gmail.com');
+                window.open('mailto:om.gaikwad1024@gmail.com');
                 break;
             default:
                 openWindow(appName);

@@ -143,10 +143,10 @@ export const EducationPage = ({ openContactWindow }: EducationPageProps) => {
         {/* Header */}
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-8 mb-6">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              🎓 Education & Learning Journey
+            <h1 className="text-3xl font-bold mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Education & Learning Journey
             </h1>
-            <p className="text-lg text-slate-400">Academic excellence and continuous learning in technology</p>
+            <p className="text-sm text-slate-400">Academic excellence and continuous learning in technology</p>
           </div>
         </div>
 

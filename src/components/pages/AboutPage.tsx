@@ -49,7 +49,7 @@ export const AboutPage = ({ openContactWindow }: AboutPageProps) => {
             position: "Enterprise Application Developer",
             company: "Oneshell",
             status: "Previous",
-            period: "2024",
+            period: "2025",
             description: "Developed robust enterprise applications using React and Java Spring Boot. Specialized in building scalable full stack solutions that integrate seamlessly with existing enterprise infrastructure and workflows.",
             highlights: [
               "Full-stack Development",

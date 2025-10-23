@@ -271,16 +271,16 @@ export const ProjectsPage = ({ openContactWindow }: ProjectPageProps) => {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(255,255,255,0))]"></div>
           
           <div className="relative z-10 text-center">
-            <div className="flex justify-center space-x-3 mb-4">
+            {/* <div className="flex justify-center space-x-3 mb-4">
               <span className="text-5xl animate-bounce">🚀</span>
               <span className="text-5xl animate-bounce" style={{ animationDelay: '0.1s' }}>💻</span>
               <span className="text-5xl animate-bounce" style={{ animationDelay: '0.2s' }}>✨</span>
-            </div>
+            </div> */}
             <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               Featured Projects
             </h1>
             <p className="text-xl text-slate-300 mb-6">Building innovative solutions that solve real-world problems</p>
-            <div className="flex justify-center gap-6 text-slate-400">
+            {/* <div className="flex justify-center gap-6 text-slate-400">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🎯</span>
                 <span className="font-semibold">{Object.keys(projects).length} Projects</span>
@@ -293,7 +293,7 @@ export const ProjectsPage = ({ openContactWindow }: ProjectPageProps) => {
                 <span className="text-2xl">🌟</span>
                 <span className="font-semibold">Open Source</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

@@ -15,6 +15,8 @@ export const SkillsPage = ({ openContactWindow }: SkillsPageProps) => {
         { name: 'JavaScript', level: 95, description: 'Modern ES6+ development' },
         { name: 'TypeScript', level: 90, description: 'Type-safe applications' },
         { name: 'Python', level: 85, description: 'Backend & data science' },
+        { name: 'C++', level: 80, description: 'system-level and performance' },
+        { name: 'Golang', level: 80, description: 'efficient server-side applications.' },
         { name: 'SQL', level: 80, description: 'Database management' },
         { name: 'HTML/CSS', level: 95, description: 'Semantic & responsive' }
       ]
@@ -135,7 +137,7 @@ export const SkillsPage = ({ openContactWindow }: SkillsPageProps) => {
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-8 mb-6">
           <div className="text-center">
             <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              ⚡ Technical Skills
+            Technical Skills
             </h1>
             <p className="text-lg text-slate-400">A comprehensive showcase of my technical expertise and proficiencies</p>
           </div>

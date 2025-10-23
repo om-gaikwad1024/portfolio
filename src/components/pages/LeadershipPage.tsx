@@ -189,10 +189,10 @@ export const LeadershipPage = ({ openContactWindow }: LeadershipPageProps) => {
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full translate-y-24 -translate-x-24"></div>
           
           <div className="relative z-10 text-center">
-            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
-              👑 Leadership & Innovation
+            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              Leadership & Innovation
             </h1>
-            <p className="text-xl mb-6 text-slate-300">Driving change through technical excellence and collaborative leadership</p>
+            <p className="text-sm mb-6 text-slate-300">Driving change through technical excellence and collaborative leadership</p>
             <div className="flex justify-center gap-4 flex-wrap">
               <div className="bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 px-4 py-2 rounded-full">
                 <span className="font-semibold text-slate-200">🏆 State Winner</span>

@@ -9,6 +9,7 @@ import { ContactPage } from './pages/ContactPage';
 import { EducationPage } from './pages/EducationPage';
 import { LeadershipPage } from './pages/LeadershipPage';
 import { HelpPage } from './pages/HelpPage';
+import { FolderPage } from './pages/FolderPage';
 
 interface WindowProps {
   id: string;
@@ -18,11 +19,13 @@ interface WindowProps {
   size: { width: number; height: number };
   isMaximized: boolean;
   zIndex: number;
+  brightness: number;
   onClose: (id: string) => void;
   onMinimize: (id: string) => void;
   onMaximize: (id: string) => void;
   onBringToFront: (id: string) => void;
   onUpdatePosition: (id: string, position: { x: number; y: number }) => void;
+  openContactWindow?: () => void;
 }
 
 export default function Window({
@@ -33,11 +36,13 @@ export default function Window({
   size,
   isMaximized,
   zIndex,
+  brightness,
   onClose,
   onMinimize,
   onMaximize,
   onBringToFront,
   onUpdatePosition,
+  openContactWindow,
 }: WindowProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -108,21 +113,23 @@ export default function Window({
   const renderContent = () => {
     switch (component) {
       case 'about':
-        return <AboutPage />;
+        return <AboutPage openContactWindow={openContactWindow} />;
       case 'projects':
-        return <ProjectsPage />;
+        return <ProjectsPage openContactWindow={openContactWindow} />;
       case 'skills':
-        return <SkillsPage />;
+        return <SkillsPage openContactWindow={openContactWindow} />;
       case 'experience':
-        return <ExperiencePage />;
+        return <ExperiencePage openContactWindow={openContactWindow} />;
       case 'contact':
         return <ContactPage />;
       case 'education':
-        return <EducationPage />;
+        return <EducationPage openContactWindow={openContactWindow} />;
       case 'leadership':
-        return <LeadershipPage />;
+        return <LeadershipPage openContactWindow={openContactWindow} />;
       case 'help':
         return <HelpPage />;
+        case 'folder': 
+      return <FolderPage />;
       default:
         return (
           <div className="p-6">
@@ -143,67 +150,77 @@ export default function Window({
   return (
     <div
       ref={windowRef}
-      className={`absolute bg-white rounded-lg shadow-2xl border border-gray-300 overflow-hidden transition-all duration-300 ease-in-out ${isAnimating ? 'animate-pulse' : ''
+      className={`absolute bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out ${isAnimating ? 'animate-pulse' : ''
         } ${isMaximized ? 'transition-all duration-300 ease-out' : 'transition-all duration-200 ease-out'}`}
       style={{
         left: position.x,
         top: position.y,
         width: size.width,
-        height: size.height,
         zIndex: zIndex,
         transform: isAnimating ? 'scale(0.98)' : 'scale(1)',
+        boxShadow: `0 0 0 1px rgba(209, 213, 219, ${brightness / 100})`,
       }}
       onClick={() => onBringToFront(id)}
     >
+      <div
+        className="absolute inset-0 pointer-events-none transition-opacity duration-300 rounded-lg z-50"
+        style={{ opacity: (100 - brightness) / 100 }}
+      >
+        <div className="absolute inset-0 bg-black rounded-lg" />
+        <div className="absolute inset-0 border border-gray-300 rounded-lg" style={{ opacity: 0 }} />
+      </div>
+
       {/* Window Header */}
       <div
-        className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-between px-4 cursor-move border-b border-gray-300"
+        className="h-8 bg-slate-800 flex items-center justify-between px-4 cursor-move border-b border-slate-700"
         onMouseDown={handleMouseDown}
         style={{ userSelect: 'none' }}
       >
-        {/* Window Controls */}
+        {/* Window Title - Left side for Windows */}
         <div className="flex items-center space-x-2">
-          <button
-            onClick={() => onClose(id)}
-            className="w-3 h-3 bg-red-500 hover:bg-red-600 rounded-full transition-all duration-150 hover:scale-110 shadow-sm"
-          />
+          <span className="text-sm font-medium text-slate-200">{title}</span>
+        </div>
+
+        {/* Window Controls - Right side for Windows */}
+        <div className="flex items-center space-x-1">
           <button
             onClick={handleMinimize}
-            className="w-3 h-3 bg-yellow-500 hover:bg-yellow-600 rounded-full transition-all duration-150 hover:scale-110 shadow-sm"
-          />
+            className="w-10 h-7 bg-transparent hover:bg-slate-700 text-slate-300 hover:text-white transition-all duration-150 flex items-center justify-center text-sm"
+          >
+            ―
+          </button>
           <button
             onClick={handleMaximize}
-            className="w-3 h-3 bg-green-500 hover:bg-green-600 rounded-full transition-all duration-150 hover:scale-110 shadow-sm"
-          />
-        </div>
-
-        {/* Window Title */}
-        <div className="flex-1 text-center">
-          <span className="text-sm font-medium text-gray-700">{title} - Browser</span>
-        </div>
-
-        {/* Browser-like elements */}
-        <div className="flex items-center space-x-2">
-          <div className="text-xs text-gray-500">🔒</div>
+            className="w-10 h-7 bg-transparent hover:bg-slate-700 text-slate-300 hover:text-white transition-all duration-150 flex items-center justify-center text-sm"
+          >
+            ☐
+          </button>
+          <button
+            onClick={() => onClose(id)}
+            className="w-10 h-7 bg-transparent hover:bg-red-600 text-slate-300 hover:text-white transition-all duration-150 flex items-center justify-center text-lg"
+          >
+            ✕
+          </button>
         </div>
       </div>
 
       {/* Browser Address Bar */}
-      <div className="h-10 bg-gradient-to-r from-gray-50 to-gray-100 flex items-center px-4 border-b border-gray-200">
+      <div className="h-10 bg-slate-800 flex items-center px-4 border-b border-slate-700">
         <div className="flex items-center space-x-2 flex-1">
-          <button className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-200 transition-all duration-150">←</button>
-          <button className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-200 transition-all duration-150">→</button>
-          <button className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-200 transition-all duration-150">↻</button>
-          <div className="flex-1 bg-white border border-gray-300 rounded-full px-3 py-1 text-sm text-gray-700 shadow-sm">
+          <button className="text-slate-400 hover:text-slate-200 p-1 rounded hover:bg-slate-700 transition-all duration-150">←</button>
+          <button className="text-slate-400 hover:text-slate-200 p-1 rounded hover:bg-slate-700 transition-all duration-150">→</button>
+          <button className="text-slate-400 hover:text-slate-200 p-1 rounded hover:bg-slate-700 transition-all duration-150">↻</button>
+          <div className="flex-1 bg-slate-700 border border-slate-600 rounded px-3 py-1 text-sm text-slate-200">
             https://portfolio.local/{component}
           </div>
-          <button className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-200 transition-all duration-150">⋮</button>
+          <button className="text-slate-400 hover:text-slate-200 p-1 rounded hover:bg-slate-700 transition-all duration-150">⋮</button>
         </div>
       </div>
 
+
       {/* Window Content */}
       <div
-        className="flex-1 overflow-auto bg-white transition-all duration-200"
+        className="flex-1 overflow-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 transition-all duration-200 scrollbar-hide"
         style={{ height: size.height - 72 }}
       >
         {renderContent()}

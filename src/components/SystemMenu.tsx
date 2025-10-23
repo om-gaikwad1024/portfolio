@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface SystemMenuProps {
     onClose: () => void;
@@ -9,13 +9,40 @@ interface SystemMenuProps {
     brightness: number;
 }
 
-export default function SystemMenu({ onClose, onSwitchToTerminal, onBrightnessChange, brightness  }: SystemMenuProps) {
+export default function SystemMenu({ onClose, onSwitchToTerminal, onBrightnessChange, brightness }: SystemMenuProps) {
     const [volume, setVolume] = useState(50);
-    
+    const audioContextRef = useRef<AudioContext | null>(null);
+
+
 
     const handleTerminalSwitch = () => {
         onSwitchToTerminal();
         onClose();
+    };
+
+    useEffect(() => {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        return () => {
+            audioContextRef.current?.close();
+        };
+    }, []);
+
+    const playBeep = (volumeLevel: number) => {
+        if (!audioContextRef.current) return;
+
+        const audioContext = audioContextRef.current;
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value = 700;
+
+        gainNode.gain.value = volumeLevel / 100;
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1); 
     };
 
     return (
@@ -27,8 +54,8 @@ export default function SystemMenu({ onClose, onSwitchToTerminal, onBrightnessCh
             />
 
 
-           {/* System Menu */}
-<div className="absolute bottom-14 right-4 w-80 bg-gray-800 bg-opacity-95 backdrop-blur-lg rounded-lg border border-gray-600 shadow-2xl z-50 p-1.5">
+            {/* System Menu */}
+            <div className="absolute bottom-14 right-4 w-80 bg-gray-800 bg-opacity-95 backdrop-blur-lg rounded-lg border border-gray-600 shadow-2xl z-50 p-1.5">
                 {/* Header */}
                 <div className="p-4 border-b border-gray-600">
                     <h3 className="text-white font-semibold">System Controls</h3>
@@ -46,7 +73,11 @@ export default function SystemMenu({ onClose, onSwitchToTerminal, onBrightnessCh
                             min="0"
                             max="100"
                             value={volume}
-                            onChange={(e) => setVolume(Number(e.target.value))}
+                            onChange={(e) => {
+                                const newVolume = Number(e.target.value);
+                                setVolume(newVolume);
+                                playBeep(newVolume); 
+                            }}
                             className="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
                             style={{
                                 background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${volume}%, #4b5563 ${volume}%, #4b5563 100%)`

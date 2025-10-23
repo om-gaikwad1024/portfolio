@@ -111,6 +111,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
 
         return () => clearInterval(timer);
     }, []);
+
     const requestFullscreen = async () => {
         try {
             if (document.documentElement.requestFullscreen) {
@@ -126,11 +127,62 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
     };
 
     useEffect(() => {
-        // Request fullscreen when component mounts
+        
         requestFullscreen();
+        
+        let isRequestingFullscreen = false;
 
-        // Exit fullscreen when component unmounts
+        const checkAndRequestFullscreen = async () => {
+            if (!isRequestingFullscreen && !document.fullscreenElement) {
+                isRequestingFullscreen = true;
+                await requestFullscreen();
+                setTimeout(() => {
+                    isRequestingFullscreen = false;
+                }, 1000);
+            }
+        };
+
+        
+        const handleClick = () => {
+            checkAndRequestFullscreen();
+        };
+
+        
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                setTimeout(() => {
+                    checkAndRequestFullscreen();
+                }, 100);
+            }
+        };
+
+        
+        const handleFocus = () => {
+            setTimeout(() => {
+                checkAndRequestFullscreen();
+            }, 100);
+        };
+
+        
+        const handleMouseMove = () => {
+            if (!document.fullscreenElement && !document.hidden) {
+                checkAndRequestFullscreen();
+            }
+        };
+
+        
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('focus', handleFocus);
+        window.addEventListener('click', handleClick);
+        window.addEventListener('mousemove', handleMouseMove);
+        console.log('Fullscreen event listeners added.');
+        
         return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('click', handleClick);
+            window.removeEventListener('mousemove', handleMouseMove);
+
             if (document.exitFullscreen && document.fullscreenElement) {
                 document.exitFullscreen().catch(err => console.log('Exit fullscreen failed:', err));
             }
@@ -333,7 +385,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
             {/* Desktop Background */}
             <div
                 className={`absolute inset-0 bg-cover bg-center transition-all duration-500 z-0 ${isRefreshing ? 'opacity-0' : 'opacity-100'}`}
-                
+
                 onContextMenu={handleContextMenu}
             />
 
@@ -360,7 +412,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                         }}
                     >
                         <div className="px-4 py-2 text-gray-300 text-sm border-b border-gray-600 flex items-center space-x-3"
-                        style={{ padding: '0.5rem' }}
+                            style={{ padding: '0.5rem' }}
                         >
                             <span>🔧</span>
                             <span>Sort by</span>
@@ -370,7 +422,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                                 setSortOrder('default');
                                 setContextMenu({ x: 0, y: 0, visible: false });
                             }}
-                            style={{ padding: '0.5rem' }} 
+                            style={{ padding: '0.5rem' }}
                             className={`w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition-colors flex items-center justify-between ${sortOrder === 'default' ? 'bg-gray-700' : ''}`}
                         >
                             <span className="flex items-center space-x-3">
@@ -442,7 +494,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
 
 
 
-            
+
             {/* Desktop Icons */}
             <div className="absolute top-20 left-8 right-8 z-30">
                 <div className="grid grid-cols-8 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-x-8 gap-y-6 auto-rows-min">
@@ -451,10 +503,10 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                         <div
                             key={item.name}
                             className="flex flex-col items-center cursor-pointer group"
-                            onDoubleClick={() => item.isFolder ? null : handleIconClick(item.name)}
+                             onDoubleClick={() => item.isFolder ? openWindow('folder') : handleIconClick(item.name)}
                             style={{ userSelect: 'none' }}
                         >
-                            <div className="w-20 h-20 bg-white bg-opacity-10 backdrop-blur-md rounded-2xl flex items-center justify-center hover:bg-opacity-20 transition-all duration-200 group-hover:scale-105 border border-white border-opacity-20 shadow-lg">
+                            <div className="w-20 h-20 bg-gray-300 bg-opacity-40 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-opacity-60 transition-all duration-200 group-hover:scale-105 border border-white border-opacity-30 shadow-lg">
                                 {!item.isFolder ? (
                                     <>
                                         <img
@@ -510,11 +562,13 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                         size={window.size}
                         isMaximized={window.isMaximized}
                         zIndex={window.zIndex}
+                        brightness={brightness}
                         onClose={closeWindow}
                         onMinimize={minimizeWindow}
                         onMaximize={maximizeWindow}
                         onBringToFront={bringToFront}
                         onUpdatePosition={updateWindowPosition}
+                        openContactWindow={() => openWindow('contact')}
                     />
                 )
             ))}
@@ -598,7 +652,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                         {taskbaricons.map(app => (
                             <button
                                 key={app.name}
-                                onClick={() => openWindow(app.name)}
+                                onClick={() => handleIconClick(app.name)}
                                 className={`flex flex-col items-center justify-center w-12 h-10 hover:bg-gray-700 rounded-lg transition-colors group relative ${isAppMinimized(app.name) ? 'border-b-2 border-blue-400' : ''
                                     }`}
                                 title={app.title}
@@ -625,13 +679,14 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                 </div>
                 {/* System Tray */}
                 <div className="flex items-center space-x-1">
+                    <span className="text-white text-sm">{currentTime}</span>
                     <button
                         onClick={() => setShowSystemMenu(!showSystemMenu)}
                         className="text-white hover:bg-gray-700 px-2 py-1 rounded transition-colors"
                     >
                         ⚙️
                     </button>
-                    <span className="text-white text-sm">{currentTime}</span>
+
                 </div>
             </div>
         </div>

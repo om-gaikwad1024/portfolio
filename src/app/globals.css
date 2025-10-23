@@ -14,38 +14,12 @@ body {
   font-family: 'Fira Code', 'Courier New', monospace;
   font-size: 14px;
   background-color: black;
-  color: #00ff00;
+  /* color: #00ff00; */
   height: 100vh;
 }
 
 body {
   overflow: hidden;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #1a1a1a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #00ff00;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #00cc00;
-}
-
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: #00ff00 #1a1a1a;
-}
-
-.scrollbar-thumb-gray-600::-webkit-scrollbar-thumb {
-  background-color: #00ff00;
 }
 
 @keyframes pulse {
@@ -275,3 +249,12 @@ body {
   /* padding: 20px; */
   flex-direction: column;
 }
+
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }

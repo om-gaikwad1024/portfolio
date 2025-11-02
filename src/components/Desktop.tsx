@@ -517,7 +517,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
             )}
 
             <div className={`absolute ${isMobile ? 'top-4 left-4 right-4' : 'top-20 left-8 right-8'} z-30`}>
-                <div className={`grid ${isMobile ? 'grid-cols-4 gap-4' : 'grid-cols-8 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-x-8 gap-y-6'} auto-rows-min`}>
+                <div className={`grid ${isMobile ? 'pt-15 grid-cols-4 gap-4' : 'grid-cols-8 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-x-8 gap-y-6'} auto-rows-min`}>
                     {getSortedApps().map((item, index) => (
                         <div
                             key={item.name}

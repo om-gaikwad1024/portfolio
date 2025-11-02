@@ -385,6 +385,7 @@ body {
   .main-content {
     padding: 8px;
     gap: 8px;
+    max-height: 100vh;
   }
 
   .spline-container {
@@ -411,6 +412,7 @@ body {
 @media (max-width: 768px) {
   .desktop-icons-mobile {
     padding-top: 1rem;
+    
     padding-left: 1rem;
     padding-right: 1rem;
   }
@@ -418,6 +420,7 @@ body {
   .desktop-icon-mobile {
     width: 4rem;
     height: 4rem;
+    margin-top: 30%;
   }
 
   .desktop-icon-image-mobile {

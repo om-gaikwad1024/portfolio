@@ -30,6 +30,7 @@ const Terminal = forwardRef<TerminalRef, TerminalProps>(({ onTypingChange }, ref
   const [showWelcome, setShowWelcome] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const commands = {
     help: () => `Available commands:
@@ -192,20 +193,34 @@ Type any command to continue...`,
 
   // Keep terminal focused
   useEffect(() => {
-    const focusInput = () => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    };
+  if (isMobile) return; // Don't auto-focus on mobile
+  
+  const focusInput = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
 
-    document.addEventListener('click', focusInput);
-    window.addEventListener('focus', focusInput);
+  document.addEventListener('click', focusInput);
+  window.addEventListener('focus', focusInput);
 
-    return () => {
-      document.removeEventListener('click', focusInput);
-      window.removeEventListener('focus', focusInput);
-    };
-  }, []);
+  return () => {
+    document.removeEventListener('click', focusInput);
+    window.removeEventListener('focus', focusInput);
+  };
+}, [isMobile]);
+
+  useEffect(() => {
+  const checkMobile = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+  
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+  
+  return () => window.removeEventListener('resize', checkMobile);
+}, []);
+
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -248,35 +263,36 @@ Type any command to continue...`,
     );
   };
 
-  return (
+ return (
+  <div
+    className="bg-black text-green-400 h-full flex flex-col terminal-mono"
+    onClick={() => !isMobile && inputRef.current?.focus()}
+  >
+    {/* Terminal Content */}
     <div
-      className="bg-black text-green-400 h-full flex flex-col terminal-mono"
-      onClick={() => inputRef.current?.focus()}
+      ref={terminalRef}
+      className="flex-1 overflow-y-auto px-6 py-4 space-y-4 pb-20 terminal-scroll"
     >
-      {/* Terminal Content */}
-      <div
-        ref={terminalRef}
-        className="flex-1 overflow-y-auto px-6 py-4 space-y-4 pb-20 terminal-scroll"
-      >
-        {getWelcomeContent()}
+      {getWelcomeContent()}
 
-        {history.map((entry, index) => (
-          <div key={index}>
-            <div className="flex items-center terminal-prompt">
-              <span className="text-blue-400">user@portfolio</span>
-              <span className="text-white">:</span>
-              <span className="text-yellow-400">~</span>
-              <span className="text-green-400">$ </span>
-              <span className="text-white">{entry.command}</span>
-            </div>
-            <div className="mt-2 text-gray-300 whitespace-pre-wrap terminal-mono">
-              {entry.isTyping ? displayedText : entry.output}
-              {entry.isTyping && <span className="animate-pulse">|</span>}
-            </div>
+      {history.map((entry, index) => (
+        <div key={index}>
+          <div className="flex items-center terminal-prompt">
+            <span className="text-blue-400">user@portfolio</span>
+            <span className="text-white">:</span>
+            <span className="text-yellow-400">~</span>
+            <span className="text-green-400">$ </span>
+            <span className="text-white">{entry.command}</span>
           </div>
-        ))}
+          <div className="mt-2 text-gray-300 whitespace-pre-wrap terminal-mono">
+            {entry.isTyping ? displayedText : entry.output}
+            {entry.isTyping && <span className="animate-pulse">|</span>}
+          </div>
+        </div>
+      ))}
 
-        {/* Current Input Display */}
+      {/* Current Input Display - Only show on desktop */}
+      {!isMobile && (
         <div className="flex items-center terminal-prompt">
           <span className="text-blue-400">user@portfolio</span>
           <span className="text-white">:</span>
@@ -285,9 +301,11 @@ Type any command to continue...`,
           <span className="text-green-400 ml-2">{input}</span>
           <span className="animate-pulse text-green-400">|</span>
         </div>
-      </div>
+      )}
+    </div>
 
-      {/* Hidden Input for capturing keystrokes */}
+    {/* Hidden Input for capturing keystrokes - Disabled on mobile */}
+    {!isMobile && (
       <form onSubmit={handleSubmit} className="absolute -left-96">
         <input
           ref={inputRef}
@@ -301,9 +319,9 @@ Type any command to continue...`,
           disabled={isTyping}
         />
       </form>
-    </div>
-  );
-});
+    )}
+  </div>
+);});
 
 Terminal.displayName = 'Terminal';
 

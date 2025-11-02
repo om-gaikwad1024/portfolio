@@ -405,3 +405,43 @@ body {
     font-size: 10px;
   }
 }
+
+
+/* Desktop Mobile Optimizations */
+@media (max-width: 768px) {
+  .desktop-icons-mobile {
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .desktop-icon-mobile {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .desktop-icon-image-mobile {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .desktop-icon-text-mobile {
+    font-size: 0.75rem;
+    max-width: 4rem;
+  }
+
+  .mobile-taskbar-search {
+    width: 10rem;
+  }
+
+  .mobile-nav-buttons {
+    position: fixed;
+    bottom: 3.5rem;
+    left: 0;
+    right: 0;
+    background: rgba(31, 41, 55, 0.95);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(75, 85, 99, 1);
+    z-index: 40;
+  }
+}

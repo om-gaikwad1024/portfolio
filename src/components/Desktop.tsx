@@ -1,3 +1,4 @@
+// filename: components/Desktop.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -29,6 +30,9 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; visible: boolean }>({ x: 0, y: 0, visible: false });
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [sortOrder, setSortOrder] = useState<'default' | 'a-z' | 'z-a'>('default');
+    const [isMobile, setIsMobile] = useState(false);
+    const [showDesktopWarning, setShowDesktopWarning] = useState(false);
+    const [windowHistory, setWindowHistory] = useState<string[]>([]);
 
     const handleIconClick = (appName: string) => {
         switch (appName) {
@@ -45,7 +49,6 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                 openWindow(appName);
         }
     };
-
 
     const [folders, setFolders] = useState<Array<{
         id: string;
@@ -84,7 +87,6 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
         }, 500);
     };
 
-
     const getSortedApps = () => {
         const allApps = [...filteredApps, ...folders.map(folder => ({
             name: folder.id,
@@ -105,12 +107,31 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
     };
 
     useEffect(() => {
+        const checkMobile = () => {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+            if (mobile && !localStorage.getItem('desktopWarningShown')) {
+                setShowDesktopWarning(true);
+            }
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
         const timer = setInterval(() => {
             setCurrentTime(new Date().toLocaleTimeString());
         }, 1000);
 
-        return () => clearInterval(timer);
+        return () => {
+            clearInterval(timer);
+            window.removeEventListener('resize', checkMobile);
+        };
     }, []);
+
+    const handleCloseDesktopWarning = () => {
+        setShowDesktopWarning(false);
+        localStorage.setItem('desktopWarningShown', 'true');
+    };
 
     const requestFullscreen = async () => {
         try {
@@ -127,6 +148,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
     };
 
     useEffect(() => {
+        if (isMobile) return;
         
         requestFullscreen();
         
@@ -142,12 +164,10 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
             }
         };
 
-        
         const handleClick = () => {
             checkAndRequestFullscreen();
         };
 
-        
         const handleVisibilityChange = () => {
             if (!document.hidden) {
                 setTimeout(() => {
@@ -156,26 +176,22 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
             }
         };
 
-        
         const handleFocus = () => {
             setTimeout(() => {
                 checkAndRequestFullscreen();
             }, 100);
         };
 
-        
         const handleMouseMove = () => {
             if (!document.fullscreenElement && !document.hidden) {
                 checkAndRequestFullscreen();
             }
         };
 
-        
         document.addEventListener('visibilitychange', handleVisibilityChange);
         window.addEventListener('focus', handleFocus);
         window.addEventListener('click', handleClick);
         window.addEventListener('mousemove', handleMouseMove);
-        console.log('Fullscreen event listeners added.');
         
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -187,7 +203,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                 document.exitFullscreen().catch(err => console.log('Exit fullscreen failed:', err));
             }
         };
-    }, []);
+    }, [isMobile]);
 
     interface AppItem {
         folderId: string;
@@ -198,77 +214,25 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
     }
 
     const taskbarApps: AppItem[] = [
-        {
-            name: 'about', icon: '🧑‍💼', title: 'About', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'projects', icon: '🗂️', title: 'Projects', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'skills', icon: '⚙️', title: 'Skills', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'experience', icon: '📊', title: 'Experience', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'contact', icon: '☎️', title: 'Contact', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'education', icon: '🏫', title: 'Education', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'leadership', icon: '👑', title: 'Leadership', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'help', icon: '🆘', title: 'Help', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'github', icon: '🐱', title: 'GitHub', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'linkedin', icon: '💼', title: 'LinkedIn', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'email', icon: '✉️', title: 'Mail', isFolder: false,
-            folderId: ''
-        },
+        { name: 'about', icon: '🧑‍💼', title: 'About', isFolder: false, folderId: '' },
+        { name: 'projects', icon: '🗂️', title: 'Projects', isFolder: false, folderId: '' },
+        { name: 'skills', icon: '⚙️', title: 'Skills', isFolder: false, folderId: '' },
+        { name: 'experience', icon: '📊', title: 'Experience', isFolder: false, folderId: '' },
+        { name: 'contact', icon: '☎️', title: 'Contact', isFolder: false, folderId: '' },
+        { name: 'education', icon: '🏫', title: 'Education', isFolder: false, folderId: '' },
+        { name: 'leadership', icon: '👑', title: 'Leadership', isFolder: false, folderId: '' },
+        { name: 'help', icon: '🆘', title: 'Help', isFolder: false, folderId: '' },
+        { name: 'github', icon: '🐱', title: 'GitHub', isFolder: false, folderId: '' },
+        { name: 'linkedin', icon: '💼', title: 'LinkedIn', isFolder: false, folderId: '' },
+        { name: 'email', icon: '✉️', title: 'Mail', isFolder: false, folderId: '' },
     ];
 
     const taskbaricons: AppItem[] = [
-
-        {
-            name: 'about', icon: '🧑‍💼', title: 'About', isFolder: false,
-            folderId: ''
-        },
-
-
-        {
-            name: 'contact', icon: '☎️', title: 'Contact', isFolder: false,
-            folderId: ''
-        },
-
-
-
-        {
-            name: 'linkedin', icon: '💼', title: 'LinkedIn', isFolder: false,
-            folderId: ''
-        },
-        {
-            name: 'email', icon: '✉️', title: 'Mail', isFolder: false,
-            folderId: ''
-        },
+        { name: 'about', icon: '🧑‍💼', title: 'About', isFolder: false, folderId: '' },
+        { name: 'contact', icon: '☎️', title: 'Contact', isFolder: false, folderId: '' },
+        { name: 'linkedin', icon: '💼', title: 'LinkedIn', isFolder: false, folderId: '' },
+        { name: 'email', icon: '✉️', title: 'Mail', isFolder: false, folderId: '' },
     ];
-
 
     const filteredApps = taskbarApps.filter(app =>
         app.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -277,57 +241,80 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        setContextMenu({
-            x: e.clientX,
-            y: e.clientY,
-            visible: true
-        });
+        if (!isMobile) {
+            setContextMenu({
+                x: e.clientX,
+                y: e.clientY,
+                visible: true
+            });
+        }
     };
 
-
     const openWindow = (type: string) => {
-        // Check if window is already open
         const existingWindow = windows.find(w => w.component === type && !w.isMinimized);
         if (existingWindow) {
             bringToFront(existingWindow.id);
+            setWindowHistory(prev => [...prev.filter(id => id !== existingWindow.id), existingWindow.id]);
             return;
         }
 
-        // Check if window is minimized
         const minimizedWindow = windows.find(w => w.component === type && w.isMinimized);
         if (minimizedWindow) {
             restoreWindow(minimizedWindow.id);
+            setWindowHistory(prev => [...prev.filter(id => id !== minimizedWindow.id), minimizedWindow.id]);
             return;
         }
 
-
+        const windowWidth = isMobile ? window.innerWidth : 800;
+        const windowHeight = isMobile ? (window.innerHeight - 50) : 600;
+        const windowX = isMobile ? 0 : (100 + windows.length * 30);
+        const windowY = isMobile ? 50 : (100 + windows.length * 30);
 
         const newWindow: WindowData = {
             id: `${type}-${Date.now()}`,
             title: type.charAt(0).toUpperCase() + type.slice(1),
             component: type,
             isMinimized: false,
-            isMaximized: false,
-            position: { x: 100 + windows.length * 30, y: 100 + windows.length * 30 },
-            size: { width: 800, height: 600 },
+            isMaximized: isMobile,
+            position: { x: windowX, y: windowY },
+            size: { width: windowWidth, height: windowHeight },
             zIndex: nextZIndex,
         };
 
         setWindows(prev => [...prev, newWindow]);
+        setWindowHistory(prev => [...prev, newWindow.id]);
         setNextZIndex(prev => prev + 1);
     };
 
     const closeWindow = (id: string) => {
         setWindows(prev => prev.filter(w => w.id !== id));
+        setWindowHistory(prev => {
+            const filtered = prev.filter(wId => wId !== id);
+            if (filtered.length > 0 && isMobile) {
+                const lastWindowId = filtered[filtered.length - 1];
+                restoreWindow(lastWindowId);
+            }
+            return filtered;
+        });
     };
 
     const minimizeWindow = (id: string) => {
         setWindows(prev => prev.map(w =>
             w.id === id ? { ...w, isMinimized: true } : w
         ));
+        setWindowHistory(prev => {
+            const filtered = prev.filter(wId => wId !== id);
+            if (filtered.length > 0 && isMobile) {
+                const lastWindowId = filtered[filtered.length - 1];
+                restoreWindow(lastWindowId);
+            }
+            return filtered;
+        });
     };
 
     const maximizeWindow = (id: string) => {
+        if (isMobile) return;
+        
         setWindows(prev => prev.map(w =>
             w.id === id ? {
                 ...w,
@@ -342,6 +329,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
         setWindows(prev => prev.map(w =>
             w.id === id ? { ...w, zIndex: nextZIndex } : w
         ));
+        setWindowHistory(prev => [...prev.filter(wId => wId !== id), id]);
         setNextZIndex(prev => prev + 1);
     };
 
@@ -366,12 +354,31 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
         return windows.some(w => w.component === appName && w.isMinimized);
     };
 
+    const getCurrentWindow = () => {
+        if (windowHistory.length === 0) return null;
+        const currentId = windowHistory[windowHistory.length - 1];
+        return windows.find(w => w.id === currentId && !w.isMinimized);
+    };
+
+    const handleMobileBack = () => {
+        const currentWindow = getCurrentWindow();
+        if (currentWindow) {
+            minimizeWindow(currentWindow.id);
+        }
+    };
+
+    const handleMobileHome = () => {
+        const currentWindow = getCurrentWindow();
+        if (currentWindow) {
+            closeWindow(currentWindow.id);
+        }
+    };
+
     return (
         <div
             className="h-screen w-screen bg-gradient-to-br from-blue-900 to-purple-900 relative overflow-hidden"
             onContextMenu={handleContextMenu}
             onClick={(e) => {
-                // Only close context menu if clicking empty space
                 if (e.target === e.currentTarget) {
                     setContextMenu({ x: 0, y: 0, visible: false });
                 }
@@ -380,24 +387,43 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                 backgroundImage: "url('/images/bg.jpg')",
                 backgroundSize: 'cover',
             }}
-
         >
-            {/* Desktop Background */}
+            {showDesktopWarning && isMobile && (
+                <div className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4">
+                    <div className="bg-[#1a1a1a] border border-blue-500 rounded-lg p-6 max-w-md w-full">
+                        <div className="text-blue-400 text-xl font-bold mb-4">
+                            🖥️ Desktop Mode
+                        </div>
+                        <div className="text-gray-300 mb-4 leading-relaxed">
+                            Desktop mode is best viewed on a laptop or desktop computer for the full experience.
+                        </div>
+                        <div className="bg-slate-800 border border-slate-600 rounded p-3 mb-4">
+                            <div className="text-green-400 text-sm font-semibold mb-2">💡 Pro Tip:</div>
+                            <div className="text-gray-300 text-sm">
+                                To return to Terminal mode, tap the settings icon (⚙️) in the bottom taskbar.
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleCloseDesktopWarning}
+                            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded transition-colors"
+                        >
+                            Continue
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div
                 className={`absolute inset-0 bg-cover bg-center transition-all duration-500 z-0 ${isRefreshing ? 'opacity-0' : 'opacity-100'}`}
-
                 onContextMenu={handleContextMenu}
             />
 
-            {/* Brightness Overlay - Full screen blackout */}
             <div
                 className="absolute inset-0 bg-black pointer-events-none transition-opacity duration-300 z-40"
                 style={{ opacity: (100 - brightness) / 100 }}
             />
 
-            {/* Context Menu */}
-
-            {contextMenu.visible && (
+            {!isMobile && contextMenu.visible && (
                 <>
                     <div
                         className="fixed inset-0 z-45"
@@ -411,9 +437,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                             padding: '0.5rem'
                         }}
                     >
-                        <div className="px-4 py-2 text-gray-300 text-sm border-b border-gray-600 flex items-center space-x-3"
-                            style={{ padding: '0.5rem' }}
-                        >
+                        <div className="px-4 py-2 text-gray-300 text-sm border-b border-gray-600 flex items-center space-x-3" style={{ padding: '0.5rem' }}>
                             <span>🔧</span>
                             <span>Sort by</span>
                         </div>
@@ -459,7 +483,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                             </span>
                             {sortOrder === 'z-a' && <span className="text-blue-400">✓</span>}
                         </button>
-                        <div className="border-t border-gray-600 mt-2 pt-2"  >
+                        <div className="border-t border-gray-600 mt-2 pt-2">
                             <button
                                 onClick={handleRefresh}
                                 className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition-colors flex items-center space-x-3"
@@ -492,27 +516,23 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                 </>
             )}
 
-
-
-
-            {/* Desktop Icons */}
-            <div className="absolute top-20 left-8 right-8 z-30">
-                <div className="grid grid-cols-8 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-x-8 gap-y-6 auto-rows-min">
+            <div className={`absolute ${isMobile ? 'top-4 left-4 right-4' : 'top-20 left-8 right-8'} z-30`}>
+                <div className={`grid ${isMobile ? 'grid-cols-4 gap-4' : 'grid-cols-8 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-x-8 gap-y-6'} auto-rows-min`}>
                     {getSortedApps().map((item, index) => (
-
                         <div
                             key={item.name}
                             className="flex flex-col items-center cursor-pointer group"
-                             onDoubleClick={() => item.isFolder ? openWindow('folder') : handleIconClick(item.name)}
+                            onDoubleClick={() => item.isFolder ? openWindow('folder') : handleIconClick(item.name)}
+                            onClick={() => isMobile && (item.isFolder ? openWindow('folder') : handleIconClick(item.name))}
                             style={{ userSelect: 'none' }}
                         >
-                            <div className="w-20 h-20 bg-gray-300 bg-opacity-40 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-opacity-60 transition-all duration-200 group-hover:scale-105 border border-white border-opacity-30 shadow-lg">
+                            <div className={`${isMobile ? 'w-16 h-16' : 'w-20 h-20'} bg-gray-300 bg-opacity-40 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-opacity-60 transition-all duration-200 group-hover:scale-105 border border-white border-opacity-30 shadow-lg`}>
                                 {!item.isFolder ? (
                                     <>
                                         <img
                                             src={`/icons/${item.name}.png`}
                                             alt={item.title}
-                                            className="w-12 h-12 object-contain"
+                                            className={`${isMobile ? 'w-10 h-10' : 'w-12 h-12'} object-contain`}
                                             onError={(e) => {
                                                 const target = e.currentTarget;
                                                 const fallback = target.parentElement?.querySelector('.fallback-icon');
@@ -522,12 +542,12 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                                                 }
                                             }}
                                         />
-                                        <span className="text-3xl fallback-icon" style={{ display: 'none' }}>
+                                        <span className={`${isMobile ? 'text-2xl' : 'text-3xl'} fallback-icon`} style={{ display: 'none' }}>
                                             {item.icon}
                                         </span>
                                     </>
                                 ) : (
-                                    <span className="text-3xl">{item.icon}</span>
+                                    <span className={`${isMobile ? 'text-2xl' : 'text-3xl'}`}>{item.icon}</span>
                                 )}
                             </div>
                             {item.isFolder && folders.find(f => f.id === item.folderId)?.isEditing ? (
@@ -537,11 +557,11 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                                     onChange={(e) => updateFolderName(item.folderId, e.target.value)}
                                     onBlur={() => finishEditingFolder(item.folderId)}
                                     onKeyDown={(e) => e.key === 'Enter' && finishEditingFolder(item.folderId)}
-                                    className="text-white text-sm mt-2 text-center px-2 py-1 rounded-md bg-black bg-opacity-50 border border-white border-opacity-30 max-w-20 outline-none"
+                                    className={`text-white ${isMobile ? 'text-xs' : 'text-sm'} mt-2 text-center px-2 py-1 rounded-md bg-black bg-opacity-50 border border-white border-opacity-30 ${isMobile ? 'max-w-16' : 'max-w-20'} outline-none`}
                                     autoFocus
                                 />
                             ) : (
-                                <span className="text-white text-sm mt-2 text-center max-w-20 truncate drop-shadow-sm" style={{ paddingTop: '0.3rem' }}>
+                                <span className={`text-white ${isMobile ? 'text-xs' : 'text-sm'} mt-2 text-center ${isMobile ? 'max-w-16' : 'max-w-20'} truncate drop-shadow-sm`} style={{ paddingTop: '0.3rem' }}>
                                     {item.title}
                                 </span>
                             )}
@@ -550,7 +570,6 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                 </div>
             </div>
 
-            {/* Windows */}
             {windows.map(window => (
                 !window.isMinimized && (
                     <Window
@@ -563,6 +582,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                         isMaximized={window.isMaximized}
                         zIndex={window.zIndex}
                         brightness={brightness}
+                        isMobile={isMobile}
                         onClose={closeWindow}
                         onMinimize={minimizeWindow}
                         onMaximize={maximizeWindow}
@@ -573,93 +593,55 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                 )
             ))}
 
-            {/* System Menu */}
             {showSystemMenu && (
-                <SystemMenu
-                    onClose={() => setShowSystemMenu(false)}
-                    onSwitchToTerminal={onSwitchToTerminal}
-                    onBrightnessChange={setBrightness}
-                    brightness={brightness}
-                />
+                <div className="fixed inset-0 z-[10000]">
+                    <SystemMenu
+                        onClose={() => setShowSystemMenu(false)}
+                        onSwitchToTerminal={onSwitchToTerminal}
+                        onBrightnessChange={setBrightness}
+                        brightness={brightness}
+                    />
+                </div>
             )}
 
-            {/* Taskbar */}
-            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gray-800 bg-opacity-95 backdrop-blur-sm flex items-center justify-between px-4 border-t border-gray-600 z-30">
-                {/* Search Bar */}
-                <div className="flex items-center ">
-                    <button
-                        key={'projects'}
-                        onClick={() => openWindow('projects')}
-                        className={`flex flex-col items-center justify-center w-12 h-10 hover:bg-gray-700 rounded-lg transition-colors group relative ${isAppMinimized('projects') ? 'border-b-2 border-blue-400' : ''
-                            }`}
-                        title={'projects'}
-                    >
-                        <img
-                            src={`/icons/projects.png`}
-                            alt={'projects'}
-                            className="w-7 h-7 object-contain"
-                            onError={(e) => {
-                                const target = e.currentTarget;
-                                const fallback = target.parentElement?.querySelector('.fallback-icon');
-                                if (fallback) {
-                                    target.style.display = 'none';
-                                    (fallback as HTMLElement).style.display = 'block';
-                                }
-                            }}
-                        />
-                    </button>
-                    <div className=" left-1/4  p-2" >
-                        <div className="flex items-center bg-white bg-opacity-40 backdrop-blur-lg rounded-full px-4 py-0.5 border border-black border-opacity-30 w-66">
-                            {/* Search Icon */}
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5 text-gray-600 mr-3 flex-shrink-0"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M21 21l-4.35-4.35M5 11a6 6 0 1112 0 6 6 0 01-12 0z"
-                                />
-                            </svg>
+            <div className={`absolute bottom-0 left-0 right-0 ${isMobile ? 'h-12' : 'h-12'} bg-gray-800 bg-opacity-95 backdrop-blur-sm flex items-center ${isMobile ? 'justify-around px-2' : 'justify-between px-4'} border-t border-gray-600 z-30`}>
+                {isMobile ? (
+                    <>
+                        <button
+                            onClick={() => setShowSystemMenu(!showSystemMenu)}
+                            className="flex flex-col items-center justify-center px-4 py-1 hover:bg-gray-700 rounded-lg transition-colors"
+                        >
+                            <span className="text-xl ">⚙️</span>
+                        </button>
+                        
+                        <button
+                            onClick={handleMobileHome}
+                            disabled={!getCurrentWindow()}
+                            className={`flex flex-col items-center justify-center px-4 py-1 hover:bg-gray-700 rounded-lg transition-colors ${!getCurrentWindow() ? 'opacity-50' : ''}`}
+                        >
+                            <span className="text-3xl text-white">⌂</span>
+                        </button>
 
-                            {/* Search Input */}
-                            <input
-                                type="text"
-                                placeholder="Search applications..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="bg-transparent text-black placeholder-gray-600 outline-none w-full py-1 text-sm  "
-                            />
-                        </div>
-                    </div>
-
-                    {/* Start Button */}
-
-                    {/* <button
-                    onClick={onSwitchToTerminal}
-                    className="flex items-center space-x-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-                >
-                    <span className="text-white">🖥️</span>
-                    <span className="text-white text-sm">Terminal</span>
-                </button> */}
-
-                    {/* App Icons */}
-                    <div className="flex items-center space-x-2">
-                        {taskbaricons.map(app => (
+                        <button
+                            onClick={handleMobileBack}
+                            disabled={!getCurrentWindow()}
+                            className={`flex flex-col items-center justify-center px-4 py-1 hover:bg-gray-700 rounded-lg transition-colors ${!getCurrentWindow() ? 'opacity-50' : ''}`}
+                        >
+                            <span className="text-2xl text-white">◁</span>
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <div className="flex items-center">
                             <button
-                                key={app.name}
-                                onClick={() => handleIconClick(app.name)}
-                                className={`flex flex-col items-center justify-center w-12 h-10 hover:bg-gray-700 rounded-lg transition-colors group relative ${isAppMinimized(app.name) ? 'border-b-2 border-blue-400' : ''
-                                    }`}
-                                title={app.title}
+                                key={'projects'}
+                                onClick={() => openWindow('projects')}
+                                className={`flex flex-col items-center justify-center w-12 h-10 hover:bg-gray-700 rounded-lg transition-colors group relative ${isAppMinimized('projects') ? 'border-b-2 border-blue-400' : ''}`}
+                                title={'projects'}
                             >
                                 <img
-                                    src={`/icons/${app.name}.png`}
-                                    alt={app.title}
+                                    src={`/icons/projects.png`}
+                                    alt={'projects'}
                                     className="w-7 h-7 object-contain"
                                     onError={(e) => {
                                         const target = e.currentTarget;
@@ -670,24 +652,72 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                                         }
                                     }}
                                 />
-                                <span className="text-3xl fallback-icon" style={{ display: 'none' }}>
-                                    {app.icon}
-                                </span>
                             </button>
-                        ))}
-                    </div>
-                </div>
-                {/* System Tray */}
-                <div className="flex items-center space-x-1">
-                    <span className="text-white text-sm">{currentTime}</span>
-                    <button
-                        onClick={() => setShowSystemMenu(!showSystemMenu)}
-                        className="text-white hover:bg-gray-700 px-2 py-1 rounded transition-colors"
-                    >
-                        ⚙️
-                    </button>
+                            <div className="left-1/4 p-2">
+                                <div className="flex items-center bg-white bg-opacity-40 backdrop-blur-lg rounded-full px-4 py-0.5 border border-black border-opacity-30 w-66">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-5 w-5 text-gray-600 mr-2 flex-shrink-0"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M21 21l-4.35-4.35M5 11a6 6 0 1112 0 6 6 0 01-12 0z"
+                                        />
+                                    </svg>
+                                    <input
+                                        type="text"
+                                        placeholder="Search applications..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="bg-transparent text-black placeholder-gray-600 outline-none w-full py-1 text-sm"
+                                    />
+                                </div>
+                            </div>
 
-                </div>
+                            <div className="flex items-center space-x-2">
+                                {taskbaricons.map(app => (
+                                    <button
+                                        key={app.name}
+                                        onClick={() => handleIconClick(app.name)}
+                                        className={`flex flex-col items-center justify-center w-12 h-10 hover:bg-gray-700 rounded-lg transition-colors group relative ${isAppMinimized(app.name) ? 'border-b-2 border-blue-400' : ''}`}
+                                        title={app.title}
+                                    >
+                                        <img
+                                            src={`/icons/${app.name}.png`}
+                                            alt={app.title}
+                                            className="w-7 h-7 object-contain"
+                                            onError={(e) => {
+                                                const target = e.currentTarget;
+                                                const fallback = target.parentElement?.querySelector('.fallback-icon');
+                                                if (fallback) {
+                                                    target.style.display = 'none';
+                                                    (fallback as HTMLElement).style.display = 'block';
+                                                }
+                                            }}
+                                        />
+                                        <span className="text-3xl fallback-icon" style={{ display: 'none' }}>
+                                            {app.icon}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                            <span className="text-white text-sm">{currentTime}</span>
+                            <button
+                                onClick={() => setShowSystemMenu(!showSystemMenu)}
+                                className="text-white hover:bg-gray-700 px-2 py-1 rounded transition-colors"
+                            >
+                                ⚙️
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

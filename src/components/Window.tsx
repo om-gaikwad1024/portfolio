@@ -1,3 +1,4 @@
+// filename: components/Window.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -20,6 +21,7 @@ interface WindowProps {
   isMaximized: boolean;
   zIndex: number;
   brightness: number;
+  isMobile: boolean;
   onClose: (id: string) => void;
   onMinimize: (id: string) => void;
   onMaximize: (id: string) => void;
@@ -37,6 +39,7 @@ export default function Window({
   isMaximized,
   zIndex,
   brightness,
+  isMobile,
   onClose,
   onMinimize,
   onMaximize,
@@ -50,7 +53,7 @@ export default function Window({
   const windowRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (isMaximized) return;
+    if (isMaximized || isMobile) return;
 
     const rect = windowRef.current?.getBoundingClientRect();
     if (rect) {
@@ -72,6 +75,7 @@ export default function Window({
   };
 
   const handleMaximize = () => {
+    if (isMobile) return;
     setIsAnimating(true);
     setTimeout(() => {
       onMaximize(id);
@@ -81,13 +85,12 @@ export default function Window({
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging && !isMaximized) {
+      if (isDragging && !isMaximized && !isMobile) {
         const newPosition = {
           x: e.clientX - dragOffset.x,
           y: e.clientY - dragOffset.y,
         };
 
-        // Constrain to screen bounds
         newPosition.x = Math.max(0, Math.min(newPosition.x, window.innerWidth - size.width));
         newPosition.y = Math.max(0, Math.min(newPosition.y, window.innerHeight - size.height - 50));
 
@@ -108,7 +111,7 @@ export default function Window({
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, dragOffset, isMaximized, size, id, onUpdatePosition]);
+  }, [isDragging, dragOffset, isMaximized, isMobile, size, id, onUpdatePosition]);
 
   const renderContent = () => {
     switch (component) {
@@ -128,8 +131,8 @@ export default function Window({
         return <LeadershipPage openContactWindow={openContactWindow} />;
       case 'help':
         return <HelpPage />;
-        case 'folder': 
-      return <FolderPage />;
+      case 'folder': 
+        return <FolderPage />;
       default:
         return (
           <div className="p-6">
@@ -147,15 +150,19 @@ export default function Window({
     }
   };
 
+  const windowHeight = isMobile ? (window.innerHeight - 112) : size.height;
+
   return (
     <div
       ref={windowRef}
-      className={`absolute bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out ${isAnimating ? 'animate-pulse' : ''
-        } ${isMaximized ? 'transition-all duration-300 ease-out' : 'transition-all duration-200 ease-out'}`}
+      className={`absolute bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out ${
+        isAnimating ? 'animate-pulse' : ''
+      } ${isMaximized ? 'transition-all duration-300 ease-out' : 'transition-all duration-200 ease-out'}`}
       style={{
         left: position.x,
         top: position.y,
         width: size.width,
+        height: isMobile ? windowHeight : 'auto',
         zIndex: zIndex,
         transform: isAnimating ? 'scale(0.98)' : 'scale(1)',
         boxShadow: `0 0 0 1px rgba(209, 213, 219, ${brightness / 100})`,
@@ -170,18 +177,15 @@ export default function Window({
         <div className="absolute inset-0 border border-gray-300 rounded-lg" style={{ opacity: 0 }} />
       </div>
 
-      {/* Window Header */}
       <div
         className="h-8 bg-slate-800 flex items-center justify-between px-4 cursor-move border-b border-slate-700"
         onMouseDown={handleMouseDown}
         style={{ userSelect: 'none' }}
       >
-        {/* Window Title - Left side for Windows */}
         <div className="flex items-center space-x-2">
           <span className="text-sm font-medium text-slate-200">{title}</span>
         </div>
 
-        {/* Window Controls - Right side for Windows */}
         <div className="flex items-center space-x-1">
           <button
             onClick={handleMinimize}
@@ -189,12 +193,14 @@ export default function Window({
           >
             ―
           </button>
-          <button
-            onClick={handleMaximize}
-            className="w-10 h-7 bg-transparent hover:bg-slate-700 text-slate-300 hover:text-white transition-all duration-150 flex items-center justify-center text-sm"
-          >
-            ☐
-          </button>
+          {!isMobile && (
+            <button
+              onClick={handleMaximize}
+              className="w-10 h-7 bg-transparent hover:bg-slate-700 text-slate-300 hover:text-white transition-all duration-150 flex items-center justify-center text-sm"
+            >
+              ☐
+            </button>
+          )}
           <button
             onClick={() => onClose(id)}
             className="w-10 h-7 bg-transparent hover:bg-red-600 text-slate-300 hover:text-white transition-all duration-150 flex items-center justify-center text-lg"
@@ -204,7 +210,6 @@ export default function Window({
         </div>
       </div>
 
-      {/* Browser Address Bar */}
       <div className="h-10 bg-slate-800 flex items-center px-4 border-b border-slate-700">
         <div className="flex items-center space-x-2 flex-1">
           <button className="text-slate-400 hover:text-slate-200 p-1 rounded hover:bg-slate-700 transition-all duration-150">←</button>
@@ -217,11 +222,9 @@ export default function Window({
         </div>
       </div>
 
-
-      {/* Window Content */}
       <div
         className="flex-1 overflow-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 transition-all duration-200 scrollbar-hide"
-        style={{ height: size.height - 72 }}
+        style={{ height: windowHeight - 72 }}
       >
         {renderContent()}
       </div>

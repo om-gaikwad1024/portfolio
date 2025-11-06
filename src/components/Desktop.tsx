@@ -146,6 +146,11 @@ export default function Desktop({ onSwitchToTerminal, showTip, onCloseTip }: Des
 
     const requestFullscreen = async () => {
         try {
+            // Force scroll to top before requesting fullscreen
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+
             if (document.documentElement.requestFullscreen) {
                 await document.documentElement.requestFullscreen();
             } else if ((document.documentElement as any).webkitRequestFullscreen) {
@@ -159,8 +164,14 @@ export default function Desktop({ onSwitchToTerminal, showTip, onCloseTip }: Des
     };
 
     useEffect(() => {
+        // Force scroll to top when component mounts
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+
         if (isMobile) {
             const handleTouch = () => {
+                window.scrollTo(0, 0);
                 if (!document.fullscreenElement) {
                     requestFullscreen();
                 }
@@ -185,11 +196,13 @@ export default function Desktop({ onSwitchToTerminal, showTip, onCloseTip }: Des
         };
 
         const handleClick = () => {
+            window.scrollTo(0, 0);
             checkAndRequestFullscreen();
         };
 
         const handleVisibilityChange = () => {
             if (!document.hidden) {
+                window.scrollTo(0, 0);
                 setTimeout(() => {
                     checkAndRequestFullscreen();
                 }, 100);
@@ -197,6 +210,7 @@ export default function Desktop({ onSwitchToTerminal, showTip, onCloseTip }: Des
         };
 
         const handleFocus = () => {
+            window.scrollTo(0, 0);
             setTimeout(() => {
                 checkAndRequestFullscreen();
             }, 100);

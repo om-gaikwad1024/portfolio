@@ -11,6 +11,11 @@ import { EducationPage } from './pages/EducationPage';
 import { LeadershipPage } from './pages/LeadershipPage';
 import { HelpPage } from './pages/HelpPage';
 import { FolderPage } from './pages/FolderPage';
+import { Game2048Page } from './pages/Game2048Page';
+import { GitMergePage } from './pages/GitMergePage';
+
+
+import { GameOfLifePage } from './pages/GameOfLifePage';
 
 interface WindowProps {
   id: string;
@@ -114,50 +119,55 @@ export default function Window({
   }, [isDragging, dragOffset, isMaximized, isMobile, size, id, onUpdatePosition]);
 
   const renderContent = () => {
-    switch (component) {
-      case 'about':
-        return <AboutPage openContactWindow={openContactWindow} />;
-      case 'projects':
-        return <ProjectsPage openContactWindow={openContactWindow} />;
-      case 'skills':
-        return <SkillsPage openContactWindow={openContactWindow} />;
-      case 'experience':
-        return <ExperiencePage openContactWindow={openContactWindow} />;
-      case 'contact':
-        return <ContactPage />;
-      case 'education':
-        return <EducationPage openContactWindow={openContactWindow} />;
-      case 'leadership':
-        return <LeadershipPage openContactWindow={openContactWindow} />;
-      case 'help':
-        return <HelpPage />;
-      case 'folder': 
-        return <FolderPage />;
-      default:
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">{title}</h2>
-            <p className="text-gray-600">
-              This is the {title} page loaded in browser mode.
+  switch (component) {
+    case 'about':
+      return <AboutPage openContactWindow={openContactWindow} />;
+    case 'projects':
+      return <ProjectsPage openContactWindow={openContactWindow} />;
+    case 'skills':
+      return <SkillsPage openContactWindow={openContactWindow} />;
+    case 'experience':
+      return <ExperiencePage openContactWindow={openContactWindow} />;
+    case 'contact':
+      return <ContactPage />;
+    case 'education':
+      return <EducationPage openContactWindow={openContactWindow} />;
+    case 'leadership':
+      return <LeadershipPage openContactWindow={openContactWindow} />;
+    case 'help':
+      return <HelpPage />;
+    case 'folder':
+      return <FolderPage />;
+    case 'gameoflife':
+      return <GameOfLifePage isMobile={isMobile} />;
+    case '2048':
+      return <Game2048Page isMobile={isMobile} />;
+    case 'gitmerge':
+      return <GitMergePage isMobile={isMobile} />;
+    default:
+      return (
+        <div className="p-6">
+          <h2 className="text-2xl font-bold mb-4">{title}</h2>
+          <p className="text-gray-600">
+            This is the {title} page loaded in browser mode.
+          </p>
+          <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+            <p className="text-sm text-gray-500">
+              Content for {component} will be loaded here.
             </p>
-            <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-              <p className="text-sm text-gray-500">
-                Content for {component} will be loaded here.
-              </p>
-            </div>
           </div>
-        );
-    }
-  };
+        </div>
+      );
+  }
+};
 
   const windowHeight = isMobile ? (window.innerHeight - 112) : size.height;
 
   return (
     <div
       ref={windowRef}
-      className={`absolute bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out ${
-        isAnimating ? 'animate-pulse' : ''
-      } ${isMaximized ? 'transition-all duration-300 ease-out' : 'transition-all duration-200 ease-out'}`}
+      className={`absolute bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out ${isAnimating ? 'animate-pulse' : ''
+        } ${isMaximized ? 'transition-all duration-300 ease-out' : 'transition-all duration-200 ease-out'}`}
       style={{
         left: position.x,
         top: position.y,

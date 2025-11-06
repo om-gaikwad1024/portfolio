@@ -209,6 +209,7 @@ export const LeadershipPage = ({ openContactWindow }: LeadershipPageProps) => {
 
         {/* Navigation Tabs */}
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700/50 p-6 mb-8">
+        <h2 className="text-xl font-semibold text-slate-100 mb-4 text-center">Filter by Category</h2>
           <div className="flex flex-wrap justify-center gap-4">
             <button
               onClick={() => setActiveSection('all')}
@@ -292,13 +293,7 @@ export const LeadershipPage = ({ openContactWindow }: LeadershipPageProps) => {
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <h4 className="font-bold text-slate-100 text-sm">{achievement.title}</h4>
-                                <span className={`text-xs font-bold px-2 py-1 rounded-full border ${
-                                  hoveredItem === `tech-${itemIndex}-${index}`
-                                    ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-                                    : 'bg-slate-700/50 text-slate-300 border-slate-600/50'
-                                }`}>
-                                  {achievement.level}%
-                                </span>
+                                
                               </div>
                               <p className="text-xs text-blue-400 font-semibold mb-2">{achievement.event}</p>
                               <p className="text-xs text-slate-400 mb-3">{achievement.description}</p>
@@ -371,7 +366,6 @@ export const LeadershipPage = ({ openContactWindow }: LeadershipPageProps) => {
               <div className={`text-2xl font-bold ${
                 hoveredItem === `impact-${index}` ? 'text-emerald-400' : 'text-emerald-500'
               }`}>
-                {highlight.metric}
               </div>
             </div>
             <h3 className="text-lg font-bold text-slate-100 mb-3">{highlight.title}</h3>
@@ -445,7 +439,6 @@ export const LeadershipPage = ({ openContactWindow }: LeadershipPageProps) => {
                 />
               </div>
               <div className="text-center mt-2">
-                <span className="text-xs font-bold text-purple-400">{area.strength}%</span>
               </div>
             </div>
           );

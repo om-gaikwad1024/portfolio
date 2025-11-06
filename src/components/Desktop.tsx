@@ -7,6 +7,8 @@ import SystemMenu from './SystemMenu';
 
 interface DesktopProps {
     onSwitchToTerminal: () => void;
+    showTip: boolean;
+    onCloseTip: () => void;
 }
 
 interface WindowData {
@@ -20,7 +22,7 @@ interface WindowData {
     zIndex: number;
 }
 
-export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
+export default function Desktop({ onSwitchToTerminal, showTip, onCloseTip }: DesktopProps) {
     const [windows, setWindows] = useState<WindowData[]>([]);
     const [nextZIndex, setNextZIndex] = useState(1000);
     const [currentTime, setCurrentTime] = useState<string>('');
@@ -31,8 +33,9 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [sortOrder, setSortOrder] = useState<'default' | 'a-z' | 'z-a'>('default');
     const [isMobile, setIsMobile] = useState(false);
-    const [showDesktopWarning, setShowDesktopWarning] = useState(false);
     const [windowHistory, setWindowHistory] = useState<string[]>([]);
+    const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
+    const [isCharging, setIsCharging] = useState(false);
 
     const handleIconClick = (appName: string) => {
         switch (appName) {
@@ -110,11 +113,8 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
         const checkMobile = () => {
             const mobile = window.innerWidth < 768;
             setIsMobile(mobile);
-            if (mobile && !localStorage.getItem('desktopWarningShown')) {
-                setShowDesktopWarning(true);
-            }
         };
-        
+
         checkMobile();
         window.addEventListener('resize', checkMobile);
 
@@ -122,16 +122,27 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
             setCurrentTime(new Date().toLocaleTimeString());
         }, 1000);
 
+        // Battery API
+        if ('getBattery' in navigator) {
+            (navigator as any).getBattery().then((battery: any) => {
+                setBatteryLevel(Math.round(battery.level * 100));
+                setIsCharging(battery.charging);
+
+                battery.addEventListener('levelchange', () => {
+                    setBatteryLevel(Math.round(battery.level * 100));
+                });
+
+                battery.addEventListener('chargingchange', () => {
+                    setIsCharging(battery.charging);
+                });
+            });
+        }
+
         return () => {
             clearInterval(timer);
             window.removeEventListener('resize', checkMobile);
         };
     }, []);
-
-    const handleCloseDesktopWarning = () => {
-        setShowDesktopWarning(false);
-        localStorage.setItem('desktopWarningShown', 'true');
-    };
 
     const requestFullscreen = async () => {
         try {
@@ -148,10 +159,19 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
     };
 
     useEffect(() => {
-        if (isMobile) return;
-        
+        if (isMobile) {
+            const handleTouch = () => {
+                if (!document.fullscreenElement) {
+                    requestFullscreen();
+                }
+            };
+
+            document.addEventListener('touchstart', handleTouch);
+            return () => document.removeEventListener('touchstart', handleTouch);
+        }
+
         requestFullscreen();
-        
+
         let isRequestingFullscreen = false;
 
         const checkAndRequestFullscreen = async () => {
@@ -192,7 +212,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
         window.addEventListener('focus', handleFocus);
         window.addEventListener('click', handleClick);
         window.addEventListener('mousemove', handleMouseMove);
-        
+
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             window.removeEventListener('focus', handleFocus);
@@ -222,6 +242,9 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
         { name: 'education', icon: '🏫', title: 'Education', isFolder: false, folderId: '' },
         { name: 'leadership', icon: '👑', title: 'Leadership', isFolder: false, folderId: '' },
         { name: 'help', icon: '🆘', title: 'Help', isFolder: false, folderId: '' },
+        { name: '2048', icon: '🎮', title: '2048', isFolder: false, folderId: '' },
+        { name: 'gitmerge', icon: '🔀', title: 'Git Game Merge', isFolder: false, folderId: '' },
+        { name: 'gameoflife', icon: '🧬', title: 'Game of Life', isFolder: false, folderId: '' },
         { name: 'github', icon: '🐱', title: 'GitHub', isFolder: false, folderId: '' },
         { name: 'linkedin', icon: '💼', title: 'LinkedIn', isFolder: false, folderId: '' },
         { name: 'email', icon: '✉️', title: 'Mail', isFolder: false, folderId: '' },
@@ -265,8 +288,23 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
             return;
         }
 
-        const windowWidth = isMobile ? window.innerWidth : 800;
-        const windowHeight = isMobile ? (window.innerHeight - 50) : 600;
+        let windowWidth = isMobile ? window.innerWidth : 800;
+        let windowHeight = isMobile ? (window.innerHeight - 50) : 600;
+
+        if (type === 'doom') {
+            windowWidth = isMobile ? window.innerWidth : 640;
+            windowHeight = isMobile ? (window.innerHeight - 50) : 480;
+        } else if (type === 'gameoflife') {
+            windowWidth = isMobile ? window.innerWidth : 700;
+            windowHeight = isMobile ? (window.innerHeight - 50) : 650;
+        } else if (type === '2048') {
+            windowWidth = isMobile ? window.innerWidth : 600;
+            windowHeight = isMobile ? (window.innerHeight - 50) : 750;
+        } else if (type === 'gitmerge') {
+            windowWidth = isMobile ? window.innerWidth : 900;
+            windowHeight = isMobile ? (window.innerHeight - 50) : 700;
+        }
+
         const windowX = isMobile ? 0 : (100 + windows.length * 30);
         const windowY = isMobile ? 50 : (100 + windows.length * 30);
 
@@ -314,7 +352,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
 
     const maximizeWindow = (id: string) => {
         if (isMobile) return;
-        
+
         setWindows(prev => prev.map(w =>
             w.id === id ? {
                 ...w,
@@ -344,10 +382,6 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
             w.id === id ? { ...w, isMinimized: false } : w
         ));
         bringToFront(id);
-    };
-
-    const getMinimizedWindows = () => {
-        return windows.filter(w => w.isMinimized);
     };
 
     const isAppMinimized = (appName: string) => {
@@ -384,31 +418,50 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                 }
             }}
             style={{
-                backgroundImage: "url('/images/bg.jpg')",
+                backgroundImage: "url('/images/trace.svg')",
                 backgroundSize: 'cover',
             }}
         >
-            {showDesktopWarning && isMobile && (
+            {showTip && (
                 <div className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4">
                     <div className="bg-[#1a1a1a] border border-blue-500 rounded-lg p-6 max-w-md w-full">
                         <div className="text-blue-400 text-xl font-bold mb-4">
-                            🖥️ Desktop Mode
+                            🖥️ Desktop Mode Active
                         </div>
                         <div className="text-gray-300 mb-4 leading-relaxed">
-                            Desktop mode is best viewed on a laptop or desktop computer for the full experience.
+                            Welcome to Desktop Mode! {isMobile ? 'Tap' : 'Double-click'} icons to open applications.
                         </div>
                         <div className="bg-slate-800 border border-slate-600 rounded p-3 mb-4">
                             <div className="text-green-400 text-sm font-semibold mb-2">💡 Pro Tip:</div>
                             <div className="text-gray-300 text-sm">
-                                To return to Terminal mode, tap the settings icon (⚙️) in the bottom taskbar.
+                                Return to Terminal Mode anytime by clicking the settings icon (⚙️) in the {isMobile ? 'bottom' : 'taskbar'} and selecting "Switch to Terminal".
+                                {!isMobile && ' P.S. - Keep an eye out for the Easter egg! 🥚'}
                             </div>
                         </div>
                         <button
-                            onClick={handleCloseDesktopWarning}
+                            onClick={onCloseTip}
                             className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded transition-colors"
                         >
-                            Continue
+                            Got it!
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {isMobile && (
+                <div className="absolute top-0 left-0 right-0 h-8 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-between px-4 z-40">
+                    <div className="flex items-center space-x-2">
+                        <span className="text-white text-xs">{currentTime}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        {batteryLevel !== null && (
+                            <div className="flex items-center space-x-1">
+                                <span className="text-white text-xs">{batteryLevel}%</span>
+                                <span className="text-white text-xs">
+                                    {isCharging ? '⚡' : batteryLevel > 20 ? '🔋' : '🪫'}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -516,7 +569,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                 </>
             )}
 
-            <div className={`absolute ${isMobile ? 'top-4 left-4 right-4' : 'top-20 left-8 right-8'} z-30`}>
+            <div className={`absolute ${isMobile ? 'top-12 left-4 right-4' : 'top-20 left-8 right-8'} z-30`}>
                 <div className={`grid ${isMobile ? 'pt-15 grid-cols-4 gap-4' : 'grid-cols-8 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-x-8 gap-y-6'} auto-rows-min`}>
                     {getSortedApps().map((item, index) => (
                         <div
@@ -613,7 +666,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                         >
                             <span className="text-xl ">⚙️</span>
                         </button>
-                        
+
                         <button
                             onClick={handleMobileHome}
                             disabled={!getCurrentWindow()}
@@ -627,7 +680,7 @@ export default function Desktop({ onSwitchToTerminal }: DesktopProps) {
                             disabled={!getCurrentWindow()}
                             className={`flex flex-col items-center justify-center px-4 py-1 hover:bg-gray-700 rounded-lg transition-colors ${!getCurrentWindow() ? 'opacity-50' : ''}`}
                         >
-                            <span className="text-2xl text-white">◁</span>
+                            <span className="text-3xl text-white">◁</span>
                         </button>
                     </>
                 ) : (

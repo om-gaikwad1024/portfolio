@@ -211,13 +211,7 @@ export const SkillsPage = ({ openContactWindow }: SkillsPageProps) => {
                       {/* Skill Name */}
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="font-bold text-slate-100 text-lg">{skill.name}</h3>
-                        <span className={`text-sm font-semibold px-2 py-1 rounded-full border ${
-                          hoveredSkill === `${categoryKey}-${skill.name}`
-                            ? 'bg-slate-700/50 text-slate-200 border-slate-600/50'
-                            : `${colors.bg} ${colors.text} ${colors.border}`
-                        }`}>
-                          {skill.level}%
-                        </span>
+                        
                       </div>
 
                       {/* Description */}

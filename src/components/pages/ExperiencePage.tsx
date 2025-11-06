@@ -234,13 +234,7 @@ export const ExperiencePage = ({ openContactWindow }: ExpPageProps) => {
                         {/* Achievement Header */}
                         <div className="flex items-center justify-between mb-3">
                           <h4 className="font-bold text-slate-100 text-base">{achievement.title}</h4>
-                          <span className={`text-sm font-semibold px-2 py-1 rounded-full border ${
-                            hoveredExperience === `${key}-${achievement.title}`
-                              ? 'bg-slate-700/50 text-slate-200 border-slate-600/50'
-                              : `${colors.bg} ${colors.text} ${colors.border}`
-                          }`}>
-                            {achievement.level}%
-                          </span>
+                          
                         </div>
 
                         {/* Description */}

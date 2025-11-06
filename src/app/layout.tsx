@@ -1,6 +1,8 @@
+// filename: app/layout.tsx
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,7 +19,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/js-dos@6.22/dist/js-dos.css"
+        />
+      </head>
+      <body className={inter.className}>
+        <Script
+          src="https://unpkg.com/js-dos@6.22.48/dist/js-dos.js"
+          strategy="beforeInteractive"
+        />
+        {children}
+      </body>
     </html>
   )
 }

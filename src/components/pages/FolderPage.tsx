@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
+
 export const FolderPage = () => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [dots, setDots] = useState('');

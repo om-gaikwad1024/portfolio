@@ -429,7 +429,7 @@ export const ProjectsPage = ({ openContactWindow }: ProjectPageProps) => {
                     ))}
                   </div>
                 </div>
-x
+
                 {/* Hover Badge */}
                 {isHovered && !isExpanded && (
                   <div className="absolute -top-3 -right-3 bg-amber-500 text-amber-900 text-xs font-bold px-3 py-2 rounded-full animate-bounce shadow-lg">

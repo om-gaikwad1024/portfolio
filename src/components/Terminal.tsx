@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { portfolioContent } from '@/data/content';
+import { portfolioContent } from '../data/content';
 
 type Page = 'home' | 'about' | 'projects' | 'skills' | 'contact';
 

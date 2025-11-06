@@ -116,17 +116,12 @@ export default function Home() {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <button
-                onClick={handleSwitchToDesktop}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded terminal-mono transition-colors"
-              >
-                Try Desktop Mode
-              </button>
+              
               <button
                 onClick={handleCloseMobileWarning}
                 className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-3 px-4 rounded terminal-mono transition-colors"
               >
-                Continue in Terminal
+                Enter
               </button>
             </div>
           </div>

@@ -20,16 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/js-dos@6.22/dist/js-dos.css"
-        />
+        
       </head>
       <body className={inter.className}>
-        <Script
-          src="https://unpkg.com/js-dos@6.22.48/dist/js-dos.js"
-          strategy="beforeInteractive"
-        />
+       
         {children}
       </body>
     </html>

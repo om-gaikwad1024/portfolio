@@ -24,15 +24,20 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileWarning, setShowMobileWarning] = useState(false);
   const [showTerminalTip, setShowTerminalTip] = useState(false);
+  const [hasSeenWarning, setHasSeenWarning] = useState(false);
   const terminalRef = useRef<any>(null);
 
   useEffect(() => {
     setIsClient(true);
     
+    // Check if user has already seen the warning in this session
+    const warningShown = sessionStorage.getItem('terminal-warning-shown');
+    
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      if (mobile) {
+      // Only show warning if mobile, not in desktop mode, and haven't seen it yet
+      if (mobile && !isDesktopMode && !warningShown && !hasSeenWarning) {
         setShowMobileWarning(true);
       }
     };
@@ -48,7 +53,7 @@ export default function Home() {
       clearInterval(timer);
       window.removeEventListener('resize', checkMobile);
     };
-  }, []);
+  }, [isDesktopMode, hasSeenWarning]);
 
   const executeCommand = (command: string) => {
     if (terminalRef.current) {
@@ -58,16 +63,22 @@ export default function Home() {
 
   const handleCloseMobileWarning = () => {
     setShowMobileWarning(false);
+    setHasSeenWarning(true);
+    sessionStorage.setItem('terminal-warning-shown', 'true');
   };
 
   const handleSwitchToDesktop = () => {
     setIsDesktopMode(true);
     setShowTerminalTip(true);
+    setShowMobileWarning(false);
+    setHasSeenWarning(true);
+    sessionStorage.setItem('terminal-warning-shown', 'true');
   };
 
   const handleSwitchToTerminal = () => {
     setIsDesktopMode(false);
-    setShowMobileWarning(true);
+    // Don't show warning again when switching back from desktop mode
+    setHasSeenWarning(true);
   };
 
   const commands = ['help', 'about', 'projects', 'skills', 'experience', 'contact', 'education', 'leadership', 'clear'];
@@ -86,7 +97,7 @@ export default function Home() {
 
   return (
     <div className="app-container">
-      {showMobileWarning && (
+      {showMobileWarning && !hasSeenWarning && (
         <div className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4">
           <div className="bg-[#1a1a1a] border border-green-500 rounded-lg p-6 max-w-md w-full">
             <div className="text-green-400 text-xl font-bold mb-4 terminal-mono">
@@ -104,12 +115,20 @@ export default function Home() {
                 {!isMobile && ' There might be an Easter egg waiting for you... 👀'}
               </div>
             </div>
-            <button
-              onClick={handleCloseMobileWarning}
-              className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-3 px-4 rounded terminal-mono transition-colors"
-            >
-              Continue in Terminal
-            </button>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={handleSwitchToDesktop}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded terminal-mono transition-colors"
+              >
+                Try Desktop Mode
+              </button>
+              <button
+                onClick={handleCloseMobileWarning}
+                className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-3 px-4 rounded terminal-mono transition-colors"
+              >
+                Continue in Terminal
+              </button>
+            </div>
           </div>
         </div>
       )}

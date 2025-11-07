@@ -36,6 +36,8 @@ export default function Desktop({ onSwitchToTerminal, showTip, onCloseTip }: Des
     const [windowHistory, setWindowHistory] = useState<string[]>([]);
     const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
     const [isCharging, setIsCharging] = useState(false);
+    
+
 
     const handleIconClick = (appName: string) => {
         switch (appName) {
@@ -353,14 +355,47 @@ export default function Desktop({ onSwitchToTerminal, showTip, onCloseTip }: Des
     const maximizeWindow = (id: string) => {
         if (isMobile) return;
 
-        setWindows(prev => prev.map(w =>
-            w.id === id ? {
-                ...w,
-                isMaximized: !w.isMaximized,
-                position: w.isMaximized ? w.position : { x: 0, y: 0 },
-                size: w.isMaximized ? w.size : { width: window.innerWidth, height: window.innerHeight - 50 }
-            } : w
-        ));
+        setWindows(prev => prev.map(w => {
+            if (w.id === id) {
+                if (w.isMaximized) {
+                    // Un-maximize: restore to a default centered position with original size
+                    let originalWidth = 800;
+                    let originalHeight = 600;
+
+                    // Set specific sizes for special windows
+                    if (w.component === 'gameoflife') {
+                        originalWidth = 700;
+                        originalHeight = 650;
+                    } else if (w.component === '2048') {
+                        originalWidth = 600;
+                        originalHeight = 750;
+                    } else if (w.component === 'gitmerge') {
+                        originalWidth = 900;
+                        originalHeight = 700;
+                    }
+
+                    // Center the window
+                    const newX = (window.innerWidth - originalWidth) / 2;
+                    const newY = (window.innerHeight - 50 - originalHeight) / 2;
+
+                    return {
+                        ...w,
+                        isMaximized: false,
+                        position: { x: Math.max(0, newX), y: Math.max(50, newY) },
+                        size: { width: originalWidth, height: originalHeight }
+                    };
+                } else {
+                    // Maximize: full screen
+                    return {
+                        ...w,
+                        isMaximized: true,
+                        position: { x: 0, y: 0 },
+                        size: { width: window.innerWidth, height: window.innerHeight - 50 }
+                    };
+                }
+            }
+            return w;
+        }));
     };
 
     const bringToFront = (id: string) => {
@@ -428,6 +463,7 @@ export default function Desktop({ onSwitchToTerminal, showTip, onCloseTip }: Des
                         <div className="text-blue-400 text-xl font-bold mb-4">
                             🖥️ Desktop Mode Active
                         </div>
+                     
                         <div className="text-gray-300 mb-4 leading-relaxed">
                             Welcome to Desktop Mode! {isMobile ? 'Tap' : 'Double-click'} icons to open applications.
                         </div>

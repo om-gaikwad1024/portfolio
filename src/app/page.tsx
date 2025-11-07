@@ -26,34 +26,64 @@ export default function Home() {
   const [showTerminalTip, setShowTerminalTip] = useState(false);
   const [hasSeenWarning, setHasSeenWarning] = useState(false);
   const terminalRef = useRef<any>(null);
+  const [showDesktopSiteWarning, setShowDesktopSiteWarning] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+  setIsClient(true);
+  
+  const warningShown = sessionStorage.getItem('terminal-warning-shown');
+  
+  const checkMobile = () => {
+    const mobile = window.innerWidth < 768;
+    const actualWidth = window.screen.width;
+    const viewportWidth = window.innerWidth;
     
-    // Check if user has already seen the warning in this session
-    const warningShown = sessionStorage.getItem('terminal-warning-shown');
+    // Detect if desktop site mode is enabled
+    const isDesktopSiteMode = mobile && (viewportWidth > actualWidth * 1.5);
     
-    const checkMobile = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      // Only show warning if mobile, not in desktop mode, and haven't seen it yet
-      if (mobile && !isDesktopMode && !warningShown && !hasSeenWarning) {
-        setShowMobileWarning(true);
-      }
-    };
+    setIsMobile(mobile);
     
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+    // Show desktop site warning if detected
+    if (mobile && isDesktopSiteMode) {
+      setShowDesktopSiteWarning(true);
+      return;
+    }
+    
+    if (mobile && !isDesktopMode && !warningShown && !hasSeenWarning) {
+      setShowMobileWarning(true);
+    }
+  };
+  
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+  window.addEventListener('orientationchange', checkMobile);
 
-    const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleString());
-    }, 1000);
+  const timer = setInterval(() => {
+    setCurrentTime(new Date().toLocaleString());
+  }, 1000);
 
-    return () => {
-      clearInterval(timer);
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, [isDesktopMode, hasSeenWarning]);
+  return () => {
+    clearInterval(timer);
+    window.removeEventListener('resize', checkMobile);
+    window.removeEventListener('orientationchange', checkMobile);
+  };
+}, [isDesktopMode, hasSeenWarning]);
+
+  useEffect(() => {
+  // Disable desktop site mode on mobile browsers
+  if (isMobile) {
+    // Set viewport to force mobile view
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+      viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+    } else {
+      const newViewport = document.createElement('meta');
+      newViewport.name = 'viewport';
+      newViewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+      document.head.appendChild(newViewport);
+    }
+  }
+}, [isMobile]);
 
   const executeCommand = (command: string) => {
     if (terminalRef.current) {

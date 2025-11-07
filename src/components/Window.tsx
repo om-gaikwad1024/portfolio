@@ -56,6 +56,7 @@ export default function Window({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isAnimating, setIsAnimating] = useState(false);
   const windowRef = useRef<HTMLDivElement>(null);
+  
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (isMaximized || isMobile) return;
@@ -76,17 +77,17 @@ export default function Window({
     setTimeout(() => {
       onMinimize(id);
       setIsAnimating(false);
-    }, 300);
+    });
   };
 
   const handleMaximize = () => {
-    if (isMobile) return;
-    setIsAnimating(true);
-    setTimeout(() => {
-      onMaximize(id);
-      setIsAnimating(false);
-    }, 300);
-  };
+  if (isMobile) return;
+  setIsAnimating(true);
+  setTimeout(() => {
+    onMaximize(id);
+    setIsAnimating(false);
+  }, 100);
+};
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -119,47 +120,47 @@ export default function Window({
   }, [isDragging, dragOffset, isMaximized, isMobile, size, id, onUpdatePosition]);
 
   const renderContent = () => {
-  switch (component) {
-    case 'about':
-      return <AboutPage openContactWindow={openContactWindow} />;
-    case 'projects':
-      return <ProjectsPage openContactWindow={openContactWindow} />;
-    case 'skills':
-      return <SkillsPage openContactWindow={openContactWindow} />;
-    case 'experience':
-      return <ExperiencePage openContactWindow={openContactWindow} />;
-    case 'contact':
-      return <ContactPage />;
-    case 'education':
-      return <EducationPage openContactWindow={openContactWindow} />;
-    case 'leadership':
-      return <LeadershipPage openContactWindow={openContactWindow} />;
-    case 'help':
-      return <HelpPage />;
-    case 'folder':
-      return <FolderPage />;
-    case 'gameoflife':
-      return <GameOfLifePage isMobile={isMobile} />;
-    case '2048':
-      return <Game2048Page isMobile={isMobile} />;
-    case 'gitmerge':
-      return <GitMergePage isMobile={isMobile} />;
-    default:
-      return (
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-4">{title}</h2>
-          <p className="text-gray-600">
-            This is the {title} page loaded in browser mode.
-          </p>
-          <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-            <p className="text-sm text-gray-500">
-              Content for {component} will be loaded here.
+    switch (component) {
+      case 'about':
+        return <AboutPage openContactWindow={openContactWindow} />;
+      case 'projects':
+        return <ProjectsPage openContactWindow={openContactWindow} />;
+      case 'skills':
+        return <SkillsPage openContactWindow={openContactWindow} />;
+      case 'experience':
+        return <ExperiencePage openContactWindow={openContactWindow} />;
+      case 'contact':
+        return <ContactPage />;
+      case 'education':
+        return <EducationPage openContactWindow={openContactWindow} />;
+      case 'leadership':
+        return <LeadershipPage openContactWindow={openContactWindow} />;
+      case 'help':
+        return <HelpPage />;
+      case 'folder':
+        return <FolderPage />;
+      case 'gameoflife':
+        return <GameOfLifePage isMobile={isMobile} />;
+      case '2048':
+        return <Game2048Page isMobile={isMobile} />;
+      case 'gitmerge':
+        return <GitMergePage isMobile={isMobile} />;
+      default:
+        return (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-4">{title}</h2>
+            <p className="text-gray-600">
+              This is the {title} page loaded in browser mode.
             </p>
+            <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+              <p className="text-sm text-gray-500">
+                Content for {component} will be loaded here.
+              </p>
+            </div>
           </div>
-        </div>
-      );
-  }
-};
+        );
+    }
+  };
 
   const windowHeight = isMobile ? (window.innerHeight - 112) : size.height;
 

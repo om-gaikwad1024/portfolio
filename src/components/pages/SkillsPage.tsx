@@ -1,295 +1,124 @@
 import React, { useState } from 'react';
+
 interface SkillsPageProps {
   openContactWindow?: () => void;
 }
+
+const SKILL_GROUPS = [
+  {
+    id: 'frontend', label: 'FRONTEND', index: '01',
+    skills: ['React','TypeScript','JavaScript','HTML/CSS','Bootstrap','Tailwind','SharePoint SPFx','Microsoft Fluent UI'],
+    desc: 'Building pixel perfect, performant interfaces',
+  },
+  {
+    id: 'backend', label: 'BACKEND', index: '02',
+    skills: ['Flask','Django','Spring Boot','REST APIs','JWT Auth','WebSocket','Node.js'],
+    desc: 'Architecting robust, scalable server side systems',
+  },
+  {
+    id: 'aiml', label: 'AI / ML', index: '03',
+    skills: ['Reinforcement Learning','PPO Algorithm','ViZDoom','Pandas','NumPy','Matplotlib','Jupyter','Random Forest','Gemini API'],
+    desc: 'Training agents, building intelligent systems',
+  },
+  {
+    id: 'tools', label: 'TOOLS & DB', index: '04',
+    skills: ['MongoDB','SQLite','Firebase','Supabase','Git/GitHub','VS Code','IntelliJ','Figma','Unix Shell','Python','SQL'],
+    desc: 'Full spectrum of dev tools and data systems',
+  },
+];
+
+const LANGS = ['JavaScript / TypeScript','Python','SQL','HTML / CSS','C++'];
+
 export const SkillsPage = ({ openContactWindow }: SkillsPageProps) => {
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
-
-  const skillCategories = {
-    programming: {
-      title: 'Programming Languages',
-      icon: '💻',
-      color: 'blue',
-      skills: [
-        { name: 'JavaScript', level: 95, description: 'Modern ES6+ development' },
-        { name: 'TypeScript', level: 90, description: 'Type-safe applications' },
-        { name: 'Python', level: 85, description: 'Backend & data science' },
-        { name: 'C++', level: 80, description: 'system-level and performance' },
-        { name: 'Golang', level: 80, description: 'efficient server-side applications.' },
-        { name: 'SQL', level: 80, description: 'Database management' },
-        { name: 'HTML/CSS', level: 95, description: 'Semantic & responsive' }
-      ]
-    },
-    frontend: {
-      title: 'Frontend Development',
-      icon: '🎨',
-      color: 'purple',
-      skills: [
-        { name: 'React', level: 95, description: 'Component-based architecture' },
-        { name: 'SharePoint Framework', level: 85, description: 'Enterprise solutions' },
-        { name: 'Bootstrap', level: 90, description: 'Responsive frameworks' },
-        { name: 'Tailwind CSS', level: 88, description: 'Utility-first styling' },
-        { name: 'Fluent Design', level: 82, description: 'Microsoft design system' }
-      ]
-    },
-    backend: {
-      title: 'Backend Development',
-      icon: '⚙️',
-      color: 'green',
-      skills: [
-        { name: 'Flask', level: 85, description: 'Lightweight Python web framework' },
-        { name: 'Django', level: 80, description: 'Full-featured Python framework' },
-        { name: 'Spring Boot', level: 82, description: 'Enterprise Java applications' },
-        { name: 'REST APIs', level: 90, description: 'RESTful service design' },
-        { name: 'JWT Auth', level: 85, description: 'Secure authentication' }
-      ]
-    },
-    database: {
-      title: 'Databases & Tools',
-      icon: '🛠️',
-      color: 'orange',
-      skills: [
-        { name: 'MongoDB', level: 85, description: 'NoSQL database' },
-        { name: 'SQLite', level: 80, description: 'Lightweight SQL database' },
-        { name: 'Firebase', level: 82, description: 'Real-time database' },
-        { name: 'Git/GitHub', level: 95, description: 'Version control' },
-        { name: 'VS Code', level: 90, description: 'Development environment' }
-      ]
-    },
-    ml: {
-      title: 'Data Science & ML',
-      icon: '🤖',
-      color: 'red',
-      skills: [
-        { name: 'Reinforcement Learning', level: 78, description: 'PPO algorithms' },
-        { name: 'Pandas', level: 85, description: 'Data manipulation' },
-        { name: 'NumPy', level: 82, description: 'Numerical computing' },
-        { name: 'Matplotlib', level: 80, description: 'Data visualization' },
-        { name: 'Jupyter', level: 85, description: 'Interactive notebooks' }
-      ]
-    },
-    design: {
-      title: 'Design & Development',
-      icon: '🎯',
-      color: 'indigo',
-      skills: [
-        { name: 'Figma', level: 85, description: 'UI/UX design' },
-        { name: 'Canva', level: 80, description: 'Graphic design' },
-        { name: 'Unix Shell', level: 88, description: 'Command line expertise' },
-        { name: 'WebSocket', level: 82, description: 'Real-time communication' },
-        { name: 'ViZDoom', level: 75, description: 'Game-based AI research' }
-      ]
-    }
-  };
-
-  const getColorClasses = (color: string) => {
-    const colorMap: Record<string, { gradient: string; text: string; bg: string; border: string }> = {
-      blue: { 
-        gradient: 'from-blue-500/20 to-cyan-500/20',
-        text: 'text-blue-400',
-        bg: 'bg-blue-500/10',
-        border: 'border-blue-500/30'
-      },
-      purple: { 
-        gradient: 'from-purple-500/20 to-pink-500/20',
-        text: 'text-purple-400',
-        bg: 'bg-purple-500/10',
-        border: 'border-purple-500/30'
-      },
-      green: { 
-        gradient: 'from-emerald-500/20 to-teal-500/20',
-        text: 'text-emerald-400',
-        bg: 'bg-emerald-500/10',
-        border: 'border-emerald-500/30'
-      },
-      orange: { 
-        gradient: 'from-orange-500/20 to-amber-500/20',
-        text: 'text-orange-400',
-        bg: 'bg-orange-500/10',
-        border: 'border-orange-500/30'
-      },
-      red: { 
-        gradient: 'from-red-500/20 to-pink-500/20',
-        text: 'text-red-400',
-        bg: 'bg-red-500/10',
-        border: 'border-red-500/30'
-      },
-      indigo: { 
-        gradient: 'from-indigo-500/20 to-blue-500/20',
-        text: 'text-indigo-400',
-        bg: 'bg-indigo-500/10',
-        border: 'border-indigo-500/30'
-      }
-    };
-    return colorMap[color];
-  };
-
-  const filteredCategories = activeCategory === 'all' 
-    ? Object.entries(skillCategories)
-    : Object.entries(skillCategories).filter(([key]) => key === activeCategory);
+  const [hovered, setHovered] = useState<string|null>(null);
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
-      <div className="max-w-6xl mx-auto">
-        
-        {/* Header */}
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-8 mb-6">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Technical Skills
-            </h1>
-            <p className="text-lg text-slate-400">A comprehensive showcase of my technical expertise and proficiencies</p>
-          </div>
-        </div>
-
-        {/* Category Filter */}
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-6 mb-6">
-          <h2 className="text-xl font-semibold text-slate-100 mb-4 text-center">Filter by Category</h2>
-          <div className="flex flex-wrap justify-center gap-3">
-            <button
-              onClick={() => setActiveCategory('all')}
-              className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-                activeCategory === 'all' 
-                  ? 'bg-gradient-to-r from-slate-600 to-slate-700 text-slate-100 shadow-lg border border-slate-600' 
-                  : 'bg-slate-700/30 text-slate-300 hover:bg-slate-700/50 border border-slate-600/50'
-              }`}
-            >
-              🌟 All Skills
-            </button>
-            {Object.entries(skillCategories).map(([key, category]) => {
-              const colors = getColorClasses(category.color);
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveCategory(key)}
-                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-                    activeCategory === key 
-                      ? `bg-gradient-to-r ${colors.gradient} border ${colors.border} text-slate-100 shadow-lg` 
-                      : `bg-slate-700/30 text-slate-300 hover:bg-slate-700/50 border border-slate-600/50`
-                  }`}
-                >
-                  {category.icon} {category.title}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Skills Categories */}
-        <div className="space-y-8">
-          {filteredCategories.map(([categoryKey, category]) => {
-            const colors = getColorClasses(category.color);
-            return (
-              <div key={categoryKey} className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-8 animate-fadeIn">
-                <div className="flex items-center mb-6">
-                  <div className={`bg-gradient-to-br ${colors.gradient} border ${colors.border} p-3 rounded-xl mr-4`}>
-                    <span className="text-2xl">{category.icon}</span>
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-100">{category.title}</h2>
-                    <p className="text-slate-400">Hover over skills to see details</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {category.skills.map((skill, index) => (
-                    <div
-                      key={skill.name}
-                      className={`relative p-6 rounded-xl border transition-all duration-300 cursor-pointer transform hover:scale-105 ${
-                        hoveredSkill === `${categoryKey}-${skill.name}`
-                          ? `${colors.border} bg-gradient-to-br ${colors.gradient} shadow-lg shadow-${category.color}-500/10 scale-105`
-                          : 'border-slate-700/50 bg-slate-700/30 hover:border-slate-600/50'
-                      }`}
-                      onMouseEnter={() => setHoveredSkill(`${categoryKey}-${skill.name}`)}
-                      onMouseLeave={() => setHoveredSkill(null)}
-                      style={{
-                        
-                        animation: activeCategory !== 'all' ? 'fadeInUp 0.5s ease-out forwards ${index * 100}ms' : 'none'
-                      }}
-                    >
-                      {/* Skill Name */}
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-bold text-slate-100 text-lg">{skill.name}</h3>
-                        
-                      </div>
-
-                      {/* Description */}
-                      <p className={`text-sm mb-4 transition-colors ${
-                        hoveredSkill === `${categoryKey}-${skill.name}`
-                          ? 'text-slate-300'
-                          : 'text-slate-400'
-                      }`}>
-                        {skill.description}
-                      </p>
-
-                      {/* Progress Bar */}
-                      <div className="w-full bg-slate-700/50 rounded-full h-2 overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r ${colors.gradient.replace('/20', '')}`}
-                          style={{ 
-                            width: hoveredSkill === `${categoryKey}-${skill.name}` ? `${skill.level}%` : '0%',
-                            transition: 'width 1s ease-out'
-                          }}
-                        />
-                      </div>
-
-                      {/* Floating Badge */}
-                      {hoveredSkill === `${categoryKey}-${skill.name}` && (
-                        <div className="absolute -top-2 -right-2 bg-amber-500 text-amber-900 text-xs font-bold px-2 py-1 rounded-full animate-bounce">
-                          ✨
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        
-
-        {/* Call to Action */}
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-8 mt-6 text-center">
-          <h2 className="text-2xl font-bold text-slate-100 mb-4">Ready to Build Something Amazing?</h2>
-          <p className="text-slate-400 mb-6">
-            These skills combine to create powerful, scalable solutions. Let's discuss how I can contribute to your next project!
-          </p>
-          <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-8 rounded-xl hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-blue-500/20 transition-all border border-blue-400/30"
-           onClick={openContactWindow}>
-            Let's Connect! 🤝
-          </button>
-        </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fragment+Mono:ital@0;1&family=Lexend:wght@200;300;400;500&display=swap');
+        @keyframes fadeUp { from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);} }
+        @keyframes tagPop { from{opacity:0;transform:scale(0.85);}to{opacity:1;transform:scale(1);} }
+        .sk-block { animation: fadeUp 0.5s ease both; }
+        .sk-block:nth-child(1){animation-delay:0.05s}
+        .sk-block:nth-child(2){animation-delay:0.12s}
+        .sk-block:nth-child(3){animation-delay:0.19s}
+        .sk-block:nth-child(4){animation-delay:0.26s}
+        .sk-tag { animation: tagPop 0.3s ease both; }
+        .sk-tag:nth-child(1){animation-delay:0.05s}
+        .sk-tag:nth-child(2){animation-delay:0.1s}
+        .sk-tag:nth-child(3){animation-delay:0.15s}
+        .sk-tag:nth-child(4){animation-delay:0.2s}
+        .sk-tag:nth-child(5){animation-delay:0.25s}
+        .sk-tag:nth-child(6){animation-delay:0.3s}
+        .sk-tag:nth-child(7){animation-delay:0.35s}
+        .sk-tag:nth-child(8){animation-delay:0.4s}
+        .sk-tag:nth-child(9){animation-delay:0.45s}
       `}</style>
-    </div>
+
+      <div
+        className="min-h-screen bg-[#f0ece4] flex flex-col"
+        style={{
+          fontFamily: "'Lexend',sans-serif",
+          backgroundImage:'linear-gradient(rgba(0,0,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.04) 1px,transparent 1px)',
+          backgroundSize:'40px 40px',
+        }}
+      >
+        {/* TOPBAR */}
+        <div className="flex items-stretch h-[52px] border-b-[3px] border-black bg-[#f0ece4] flex-shrink-0">
+          <div className="px-6 border-r-[3px] border-black flex items-center bg-black">
+            <span className="text-[#f0ce32] text-xl tracking-[0.12em]" style={{fontFamily:"'Bebas Neue',sans-serif"}}>OMM</span>
+          </div>
+          <div className="flex-1 flex items-center px-4 md:px-6">
+            
+          </div>
+        </div>
+
+        {/* HEADER STRIP */}
+        <div className="border-b-[3px] border-black flex items-stretch">
+          <div className="bg-[#f0ce32] border-r-[3px] border-black px-6 md:px-12 py-6 flex items-center">
+            <div className="text-[48px] md:text-[72px] leading-none text-black tracking-[0.02em]" style={{fontFamily:"'Bebas Neue',sans-serif"}}>SKILLS<br/><span className="text-[#0d0d0d]/20">& STACK</span></div>
+          </div>
+          <div className="flex-1 flex flex-col justify-end p-6 md:p-8">
+            <div className="text-[9px] tracking-[0.25em] text-black/35 mb-3" style={{fontFamily:"'Fragment Mono',monospace"}}>// CORE LANGUAGES</div>
+            <div className="flex flex-wrap gap-2">
+              {LANGS.map(lang => (
+                <span key={lang} className="text-[12px] md:text-[13px] px-3 py-1 border-[3px] border-black text-black tracking-[0.08em] hover:bg-black hover:text-[#f0ce32] transition-all duration-150 cursor-default" style={{fontFamily:"'Fragment Mono',monospace"}}>{lang}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* SKILLS GRID */}
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2">
+          {SKILL_GROUPS.map((group, i) => (
+            <div
+              key={group.id}
+              className={`sk-block border-b-[3px] border-black p-7 md:p-10 cursor-default transition-colors duration-200 ${[0,2].includes(i)?'md:border-r-[3px]':''} ${hovered===group.id?'bg-black':'hover:bg-black/[0.02]'}`}
+              onMouseEnter={() => setHovered(group.id)}
+              onMouseLeave={() => setHovered(null)}
+            >
+              <div className="flex items-baseline gap-4 mb-1">
+                <span className={`text-[60px] md:text-[80px] leading-none tracking-[0.04em] transition-colors ${hovered===group.id?'text-[#f0ce32]':'text-black'}`} style={{fontFamily:"'Bebas Neue',sans-serif"}}>{group.label}</span>
+                <span className={`text-[20px] md:text-[28px] transition-colors ${hovered===group.id?'text-[#f0ce32]/30':'text-black/15'}`} style={{fontFamily:"'Bebas Neue',sans-serif"}}>{group.index}</span>
+              </div>
+              <p className={`text-[11px] mb-6 font-light transition-colors ${hovered===group.id?'text-white/40':'text-black/40'}`}>{group.desc}</p>
+              <div className="flex flex-wrap gap-2">
+                {group.skills.map((skill,j) => (
+                  <span
+                    key={skill}
+                    className={`sk-tag text-[11px] px-3 py-1.5 border-[2px] tracking-[0.06em] transition-all duration-150 cursor-default ${hovered===group.id?'border-[#f0ce32]/40 text-[#f0ce32]/80 hover:bg-[#f0ce32] hover:text-black hover:border-[#f0ce32]':'border-black/20 text-black/60 hover:bg-black hover:text-[#f0ce32] hover:border-black'}`}
+                    style={{fontFamily:"'Fragment Mono',monospace", animationDelay:`${j*0.04}s`}}
+                  >{skill}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        
+      </div>
+    </>
   );
 };
+
+export default SkillsPage;

@@ -1,118 +1,38 @@
 import React, { useState } from 'react';
 
+const CONTACT_LINKS = [
+  { label: 'EMAIL', value: 'om.gaikwad1024@gmail.com', href: 'mailto:om.gaikwad1024@gmail.com', icon: '@' },
+  { label: 'PHONE', value: '+91 6364416762', href: 'tel:+916364416762', icon: '↗' },
+  { label: 'GITHUB', value: 'github.com/om-gaikwad1024', href: 'https://github.com/om-gaikwad1024', icon: '↗' },
+  { label: 'LINKEDIN', value: 'linkedin.com/in/om-gaikwad1024', href: 'https://linkedin.com/in/om-gaikwad1024', icon: '↗' },
+];
+
 export const ContactPage = () => {
-  const [hoveredContact, setHoveredContact] = useState<string | null>(null);
-  const [activeMethod, setActiveMethod] = useState('all');
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [sent, setSent] = useState(false);
+  const [focused, setFocused] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
-
-  const contactMethods = {
-    email: {
-      title: 'Email',
-      icon: '📧',
-      color: 'blue',
-      value: 'om.gaikwad1024@gmail.com',
-      link: 'mailto:om.gaikwad1024@gmail.com',
-      description: 'Drop me a line anytime',
-      bgPattern: '📧📮✉️'
-    },
-    phone: {
-      title: 'Phone',
-      icon: '📞',
-      color: 'green',
-      value: '+91 6364416762',
-      link: 'tel:+916364416762',
-      description: 'Call for instant connect',
-      bgPattern: '📞☎️📱'
-    },
-    github: {
-      title: 'GitHub',
-      icon: '💻',
-      color: 'purple',
-      value: 'github.com/om-gaikwad1024',
-      link: 'https://github.com/om-gaikwad1024',
-      description: 'Check out my code',
-      bgPattern: '💻⚡🚀'
-    },
-    linkedin: {
-      title: 'LinkedIn',
-      icon: '💼',
-      color: 'indigo',
-      value: 'linkedin.com/in/om-gaikwad1024',
-      link: 'https://linkedin.com/in/om-gaikwad1024',
-      description: 'Let\'s connect professionally',
-      bgPattern: '💼🤝🌟'
-    }
-  };
-
-  const getColorClasses = (color: string) => {
-    const colorMap: Record<string, { gradient: string; text: string; bg: string; border: string }> = {
-      blue: {
-        gradient: 'from-blue-500/20 to-cyan-500/20',
-        text: 'text-blue-400',
-        bg: 'bg-blue-500/10',
-        border: 'border-blue-500/30'
-      },
-      green: {
-        gradient: 'from-emerald-500/20 to-teal-500/20',
-        text: 'text-emerald-400',
-        bg: 'bg-emerald-500/10',
-        border: 'border-emerald-500/30'
-      },
-      purple: {
-        gradient: 'from-purple-500/20 to-pink-500/20',
-        text: 'text-purple-400',
-        bg: 'bg-purple-500/10',
-        border: 'border-purple-500/30'
-      },
-      indigo: {
-        gradient: 'from-indigo-500/20 to-blue-500/20',
-        text: 'text-indigo-400',
-        bg: 'bg-indigo-500/10',
-        border: 'border-indigo-500/30'
-      }
-    };
-    return colorMap[color];
-  };
-
-  const filteredMethods = activeMethod === 'all'
-    ? Object.entries(contactMethods)
-    : Object.entries(contactMethods).filter(([key]) => key === activeMethod);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    if (!form.name || !form.email || !form.message) return;
     setIsSubmitting(true);
-
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          access_key: '6491ec9d-f301-4376-afe7-ae85369fe9cd', 
-          ...formData
+          access_key: '6491ec9d-f301-4376-afe7-ae85369fe9cd',
+          ...form,
         }),
       });
-
       if (response.ok) {
-        setSubmitStatus('success');
-        setFormData({ name: '', email: '', message: '' });
+        setSent(true);
+        setForm({ name: '', email: '', message: '' });
       } else {
         setSubmitStatus('error');
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -120,255 +40,146 @@ export const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
-      <div className="max-w-6xl mx-auto">
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fragment+Mono:ital@0;1&family=Lexend:wght@200;300;400;500&display=swap');
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+        .ct-fadein{animation:fadeUp 0.5s ease both;}
+        .ct-fadein-1{animation:fadeUp 0.5s 0.1s ease both;}
+        .ct-fadein-2{animation:fadeUp 0.5s 0.2s ease both;}
+        .cursor-blink{animation:blink 1s step-end infinite;}
+        .ct-input { background:transparent; outline:none; width:100%; }
+        .ct-input::placeholder { color:rgba(240,206,50,0.2); }
+      `}</style>
 
-        {/* Header */}
-        <div className="relative bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-8 mb-6 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-indigo-500/5"></div>
-          <div className="relative text-center">
-            <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              🌟 Get In Touch
-            </h1>
-            <p className="text-lg text-slate-400">Let's connect and create something amazing together!</p>
-            <div className="flex justify-center mt-4 space-x-2">
-              <span className="text-2xl animate-bounce">✨</span>
-              <span className="text-2xl animate-bounce" style={{ animationDelay: '0.1s' }}>🚀</span>
-              <span className="text-2xl animate-bounce" style={{ animationDelay: '0.2s' }}>💫</span>
+      <div className="min-h-screen bg-[#0d0d0d] flex flex-col" style={{ fontFamily: "'Lexend',sans-serif" }}>
+
+        {/* TOPBAR */}
+        <div className="flex items-stretch h-[52px] border-b-[3px] border-[#f0ce32]/20 flex-shrink-0">
+          <div className="px-6 border-r-[3px] border-[#f0ce32]/20 flex items-center bg-[#f0ce32]">
+            <span className="text-black text-xl tracking-[0.12em]" style={{ fontFamily: "'Bebas Neue',sans-serif" }}>OMM</span>
+          </div>
+          <div className="flex-1 flex items-center px-4 md:px-6">
+
+          </div>
+          <div className="px-6 border-l-[3px] border-[#f0ce32]/20 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#f0ce32] animate-pulse" />
+            <span className="text-[10px] text-[#f0ce32]/50 tracking-[0.1em]" style={{ fontFamily: "'Fragment Mono',monospace" }}>OPEN TO WORK</span>
+          </div>
+        </div>
+
+        {/* MAIN */}
+        <div className="flex-1 flex flex-col md:grid md:grid-cols-[1fr_1fr]">
+
+          {/* LEFT — YELLOW IDENTITY PANEL */}
+          <div className="ct-fadein bg-[#f0ce32] border-b-[3px] md:border-b-0 md:border-r-[3px] border-black flex flex-col justify-between p-8 md:p-14 relative overflow-hidden">
+            <div className="relative z-10">
+              <div className="text-[9px] tracking-[0.25em] text-black/50 mb-4" style={{ fontFamily: "'Fragment Mono',monospace" }}>// GET IN TOUCH</div>
+              <div className="text-[64px] md:text-[80px] leading-[0.88] text-black tracking-[0.02em] mb-8" style={{ fontFamily: "'Bebas Neue',sans-serif" }}>LET'S<br />BUILD<br />TOGETHER</div>
+              <p className="text-[13px] font-light text-black/65 leading-[1.8] max-w-xs mb-10">
+                Open to full time roles, freelance projects, and interesting collaborations. Response within 24 hours.
+              </p>
+              <div className="flex flex-col gap-0">
+                {CONTACT_LINKS.map((link, i) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex items-center justify-between py-3 border-b border-black/20 hover:border-black transition-colors"
+                  >
+                    <div>
+                      <div className="text-[9px] tracking-[0.2em] text-black/50 mb-0.5" style={{ fontFamily: "'Fragment Mono',monospace" }}>{link.label}</div>
+                      <div className="text-[12px] md:text-[13px] text-black font-light tracking-[0.02em] group-hover:font-medium transition-all">{link.value}</div>
+                    </div>
+                    <span className="text-[18px] text-black/30 group-hover:text-black group-hover:translate-x-1 transition-all">{link.icon}</span>
+                  </a>
+                ))}
+              </div>
             </div>
+            <div className="absolute bottom-[-20px] right-[-20px] text-[200px] leading-none text-black/[0.05] pointer-events-none select-none" style={{ fontFamily: "'Bebas Neue',sans-serif" }}>CT</div>
           </div>
-        </div>
 
-        {/* Contact Method Filter */}
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-6 mb-6">
-          <h2 className="text-xl font-semibold text-slate-100 mb-4 text-center">Choose Your Preferred Method</h2>
-          <div className="flex flex-wrap justify-center gap-3">
-            <button
-              onClick={() => setActiveMethod('all')}
-              className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${activeMethod === 'all'
-                ? 'bg-gradient-to-r from-slate-600 to-slate-700 text-slate-100 shadow-lg border border-slate-600'
-                : 'bg-slate-700/30 text-slate-300 hover:bg-slate-700/50 border border-slate-600/50'
-                }`}
-            >
-              🌈 All Methods
-            </button>
-            {Object.entries(contactMethods).map(([key, method]) => {
-              const colors = getColorClasses(method.color);
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveMethod(key)}
-                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${activeMethod === key
-                    ? `bg-gradient-to-r ${colors.gradient} border ${colors.border} text-slate-100 shadow-lg`
-                    : `bg-slate-700/30 text-slate-300 hover:bg-slate-700/50 border border-slate-600/50`
-                    }`}
-                >
-                  {method.icon} {method.title}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+          {/* RIGHT — TERMINAL FORM */}
+          <div className="ct-fadein-1 p-8 md:p-14 flex flex-col justify-center">
+            {!sent ? (
+              <>
+                <div className="text-[9px] tracking-[0.25em] text-[#f0ce32]/40 mb-6" style={{ fontFamily: "'Fragment Mono',monospace" }}>// SEND A MESSAGE</div>
+                <div className="text-[28px] md:text-[36px] text-white tracking-[0.04em] mb-8" style={{ fontFamily: "'Bebas Neue',sans-serif" }}>NEW MESSAGE<span className="cursor-blink text-[#f0ce32]">_</span></div>
 
-        {/* Contact Methods */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="space-y-6">
-            {filteredMethods.map(([methodKey, method], index) => {
-              const colors = getColorClasses(method.color);
-              return (
-                <div
-                  key={methodKey}
-                  className={`relative bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border p-6 transition-all duration-300 cursor-pointer transform hover:scale-105 ${hoveredContact === methodKey
-                    ? `${colors.border} bg-gradient-to-br ${colors.gradient} shadow-lg scale-105`
-                    : 'border-slate-700/50 hover:border-slate-600/50'
-                    }`}
-                  onMouseEnter={() => setHoveredContact(methodKey)}
-                  onMouseLeave={() => setHoveredContact(null)}
-                  onClick={() => window.open(method.link, '_blank')}
-                  style={{
-
-                    animation: 'fadeInLeft 0.6s ease-out forwards ${index * 200}ms'
-                  }}
-                >
-                  {/* Background Pattern */}
-                  <div className="absolute inset-0 opacity-5 text-6xl overflow-hidden">
-                    <div className="absolute -top-4 -right-4 transform rotate-12">
-                      {method.bgPattern.split('').map((emoji, i) => (
-                        <span key={i} className="inline-block animate-pulse" style={{ animationDelay: `${i * 0.5}s` }}>
-                          {emoji}
-                        </span>
-                      ))}
+                <div className="flex flex-col gap-0">
+                  {[
+                    { key: 'name', label: 'YOUR NAME', placeholder: 'e.g. Jane Doe', type: 'text' },
+                    { key: 'email', label: 'YOUR EMAIL', placeholder: 'e.g. jane@example.com', type: 'email' },
+                  ].map(field => (
+                    <div
+                      key={field.key}
+                      className={`border-[3px] border-b-0 p-4 md:p-5 transition-colors ${focused === field.key ? 'border-[#f0ce32] bg-[#f0ce32]/5' : 'border-[#f0ce32]/20'}`}
+                    >
+                      <div className="text-[9px] tracking-[0.2em] text-[#f0ce32]/50 mb-2" style={{ fontFamily: "'Fragment Mono',monospace" }}>{field.label}</div>
+                      <input
+                        className="ct-input text-[14px] text-[#f0ce32] font-light tracking-[0.04em]"
+                        style={{ fontFamily: "'Lexend',sans-serif" }}
+                        type={field.type}
+                        placeholder={field.placeholder}
+                        value={(form as any)[field.key]}
+                        onChange={e => setForm({ ...form, [field.key]: e.target.value })}
+                        onFocus={() => setFocused(field.key)}
+                        onBlur={() => setFocused(null)}
+                      />
                     </div>
+                  ))}
+                  <div className={`border-[3px] border-b-0 p-4 md:p-5 transition-colors ${focused === 'message' ? 'border-[#f0ce32] bg-[#f0ce32]/5' : 'border-[#f0ce32]/20'}`}>
+                    <div className="text-[9px] tracking-[0.2em] text-[#f0ce32]/50 mb-2" style={{ fontFamily: "'Fragment Mono',monospace" }}>MESSAGE</div>
+                    <textarea
+                      className="ct-input text-[14px] text-[#f0ce32] font-light tracking-[0.04em] resize-none"
+                      style={{ fontFamily: "'Lexend',sans-serif" }}
+                      rows={4}
+                      placeholder="What's on your mind?"
+                      value={form.message}
+                      onChange={e => setForm({ ...form, message: e.target.value })}
+                      onFocus={() => setFocused('message')}
+                      onBlur={() => setFocused(null)}
+                    />
                   </div>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="border-[3px] border-[#f0ce32] bg-[#f0ce32] text-black p-4 md:p-5 text-[16px] tracking-[0.2em] hover:bg-transparent hover:text-[#f0ce32] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ fontFamily: "'Bebas Neue',sans-serif" }}
+                  >
+                    {isSubmitting ? 'TRANSMITTING...' : 'TRANSMIT MESSAGE ↗'}
+                  </button>
 
-                  <div className="relative flex items-center space-x-4">
-                    <div className={`bg-gradient-to-br ${colors.gradient} border ${colors.border} p-4 rounded-xl transform transition-transform ${hoveredContact === methodKey ? 'scale-110 rotate-12' : ''
-                      }`}>
-                      <span className="text-3xl">{method.icon}</span>
-                    </div>
-
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-slate-100 mb-1">{method.title}</h3>
-                      <p className={`text-sm mb-2 transition-colors ${hoveredContact === methodKey ? 'text-slate-300' : 'text-slate-400'
-                        }`}>
-                        {method.description}
-                      </p>
-                      <p className="font-mono text-sm font-medium text-slate-200 break-all">
-                        {method.value}
-                      </p>
-                    </div>
-
-                    <div className={`text-2xl text-slate-400 transform transition-transform ${hoveredContact === methodKey ? 'translate-x-2' : ''
-                      }`}>
-                      →
-                    </div>
-                  </div>
-
-                  {/* Floating Badge */}
-                  {hoveredContact === methodKey && (
-                    <div className="absolute -top-2 -right-2 bg-amber-500 text-amber-900 text-xs font-bold px-2 py-1 rounded-full animate-bounce">
-                      Click me! ✨
+                  {submitStatus === 'error' && (
+                    <div className="border-[3px] border-[#f87171]/40 p-3 text-[10px] text-[#f87171]/70 tracking-[0.15em]" style={{ fontFamily: "'Fragment Mono',monospace" }}>
+    // ERROR: TRANSMISSION FAILED · TRY AGAIN
                     </div>
                   )}
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Contact Form */}
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-7">
-            <div className="flex items-center mb-6">
-              <div className="bg-gradient-to-br from-pink-500/20 to-red-500/20 border border-pink-500/30 p-3 rounded-xl mr-4">
-                <span className="text-3xl">✉️</span>
+              </>
+            ) : (
+              <div className="flex flex-col items-start gap-4">
+                <div className="text-[9px] tracking-[0.2em] text-[#f0ce32]/40" style={{ fontFamily: "'Fragment Mono',monospace" }}>// STATUS: 200 OK</div>
+                <div className="text-[52px] md:text-[72px] leading-none text-[#f0ce32] tracking-[0.03em]" style={{ fontFamily: "'Bebas Neue',sans-serif" }}>MESSAGE<br />SENT ✓</div>
+                <p className="text-[13px] font-light text-white/50 leading-[1.8]">Got it. I'll get back to you within 24 hours.</p>
+                <button
+                  onClick={() => { setSent(false); setForm({ name: '', email: '', message: '' }); }}
+                  className="mt-4 border-[3px] border-[#f0ce32]/40 text-[#f0ce32]/60 px-6 py-3 text-[13px] tracking-[0.15em] hover:border-[#f0ce32] hover:text-[#f0ce32] transition-all"
+                  style={{ fontFamily: "'Bebas Neue',sans-serif" }}
+                >
+                  SEND ANOTHER
+                </button>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold text-slate-100">Send a Message</h2>
-                <p className="text-slate-400">Quick way to reach out directly</p>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
-                  placeholder="What should I call you?"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Your Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Your Message
-                </label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all resize-none"
-                  placeholder="Tell me about your project, ideas, or just say hello!"
-                />
-              </div>
-
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all shadow-lg hover:shadow-blue-500/20 border border-blue-400/30 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Sending... ⏳' : 'Send Message 🚀'}
-              </button>
-
-              {submitStatus === 'success' && (
-                <p className="text-green-400 text-sm mt-2">✅ Message sent successfully!</p>
-              )}
-              {submitStatus === 'error' && (
-                <p className="text-red-400 text-sm mt-2">❌ Failed to send. Please try again.</p>
-              )}
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-8 mb-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-slate-100 mb-2">🤝 Let's Connect</h2>
-            <p className="text-slate-400 mb-8">Choose your preferred way to reach out</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {Object.entries(contactMethods).map(([key, method]) => {
-                const colors = getColorClasses(method.color);
-                return (
-                  <div
-                    key={key}
-                    className="text-center cursor-pointer group"
-                    onClick={() => window.open(method.link, '_blank')}
-                  >
-                    <div className={`bg-gradient-to-br ${colors.gradient} border ${colors.border} group-hover:scale-110 rounded-xl w-16 h-16 flex items-center justify-center mx-auto mb-3 transition-all shadow-sm group-hover:shadow-md`}>
-                      <span className="text-2xl">{method.icon}</span>
-                    </div>
-                    <p className="font-semibold text-sm text-slate-200 group-hover:text-slate-100">{method.title}</p>
-                    <p className="text-xs text-slate-500 mt-1">{method.description}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Fun Call to Action */}
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-8 text-center">
-          <h2 className="text-2xl font-bold text-slate-100 mb-4">Ready to Start a Conversation? 💬</h2>
-          <p className="text-slate-400 mb-6">
-            Whether you have a project in mind, want to collaborate, or just want to say hi - I'd love to hear from you!
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <button
-              onClick={() => window.open('mailto:om.gaikwad1024@gmail.com', '_blank')}
-              className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white font-semibold py-3 px-6 rounded-xl transform hover:scale-105 transition-all shadow-lg border border-slate-600"
-            >
-              Email Me 📧
-            </button>
-            <button
-              onClick={() => window.open('https://linkedin.com/in/om-gaikwad1024', '_blank')}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl transform hover:scale-105 transition-all shadow-lg border border-blue-400/30"
-            >
-              Connect on LinkedIn 💼
-            </button>
-          </div>
-        </div>
+       
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
-    </div>
+    </>
   );
 };
+
+export default ContactPage;

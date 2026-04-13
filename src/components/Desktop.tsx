@@ -1,7 +1,6 @@
-// filename: components/Desktop.tsx
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Window from './Window';
 import SystemMenu from './SystemMenu';
 
@@ -22,792 +21,551 @@ interface WindowData {
     zIndex: number;
 }
 
+const APPS = [
+    { name: 'about', abbr: 'AB', title: 'About', accent: true },
+    { name: 'projects', abbr: 'PJ', title: 'Projects', accent: false },
+    { name: 'skills', abbr: 'SK', title: 'Skills', accent: false },
+    { name: 'experience', abbr: 'EX', title: 'Experience', accent: false },
+    { name: 'contact', abbr: 'CT', title: 'Contact', accent: true },
+    { name: 'education', abbr: 'ED', title: 'Education', accent: false },
+    { name: 'leadership', abbr: 'LD', title: 'Leadership', accent: false },
+    { name: 'help', abbr: '?', title: 'Help', accent: false },
+    { name: '2048', abbr: '2K', title: '2048', accent: true },
+    { name: 'gitmerge', abbr: 'GM', title: 'Git Merge', accent: false },
+    { name: 'gameoflife', abbr: 'GL', title: 'Life', accent: false },
+];
+
+const EXTERNAL = [
+    { name: 'github', abbr: 'GH', title: 'GitHub', href: 'https://github.com/om-gaikwad1024' },
+    { name: 'linkedin', abbr: 'LI', title: 'LinkedIn', href: 'https://linkedin.com/in/om-gaikwad1024' },
+    { name: 'email', abbr: 'ML', title: 'Mail', href: 'mailto:om.gaikwad1024@gmail.com' },
+];
+
+const QUICK = ['about', 'projects', 'contact'];
+
+const Y = '#f0ce32';
+const BG = '#0a0a0a';
+const CARD = '#111111';
+
 export default function Desktop({ onSwitchToTerminal, showTip, onCloseTip }: DesktopProps) {
     const [windows, setWindows] = useState<WindowData[]>([]);
     const [nextZIndex, setNextZIndex] = useState(1000);
-    const [currentTime, setCurrentTime] = useState<string>('');
+    const [time, setTime] = useState('');
+    const [dateInfo, setDateInfo] = useState({ day: '', date: '', month: '' });
     const [searchTerm, setSearchTerm] = useState('');
     const [showSystemMenu, setShowSystemMenu] = useState(false);
     const [brightness, setBrightness] = useState(100);
-    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; visible: boolean }>({ x: 0, y: 0, visible: false });
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const [sortOrder, setSortOrder] = useState<'default' | 'a-z' | 'z-a'>('default');
     const [isMobile, setIsMobile] = useState(false);
     const [windowHistory, setWindowHistory] = useState<string[]>([]);
     const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
     const [isCharging, setIsCharging] = useState(false);
-    
-
-
-    const handleIconClick = (appName: string) => {
-        switch (appName) {
-            case 'github':
-                window.open('https://github.com/om-gaikwad1024', '_blank');
-                break;
-            case 'linkedin':
-                window.open('https://linkedin.com/in/om-gaikwad1024', '_blank');
-                break;
-            case 'email':
-                window.open('mailto:om.gaikwad1024@gmail.com');
-                break;
-            default:
-                openWindow(appName);
-        }
-    };
-
-    const [folders, setFolders] = useState<Array<{
-        id: string;
-        name: string;
-        isEditing: boolean;
-    }>>([]);
-
-    const updateFolderName = (id: string, newName: string) => {
-        setFolders(prev => prev.map(folder =>
-            folder.id === id ? { ...folder, name: newName } : folder
-        ));
-    };
-
-    const finishEditingFolder = (id: string) => {
-        setFolders(prev => prev.map(folder =>
-            folder.id === id ? { ...folder, isEditing: false } : folder
-        ));
-    };
-
-    const handleCreateFolder = () => {
-        const newFolder = {
-            id: `folder-${Date.now()}`,
-            name: '',
-            isEditing: true
-        };
-        setFolders(prev => [...prev, newFolder]);
-        setContextMenu({ x: 0, y: 0, visible: false });
-    };
-
-    const handleRefresh = () => {
-        requestFullscreen();
-        setContextMenu({ x: 0, y: 0, visible: false });
-        setIsRefreshing(true);
-        setTimeout(() => {
-            setIsRefreshing(false);
-        }, 500);
-    };
-
-    const getSortedApps = () => {
-        const allApps = [...filteredApps, ...folders.map(folder => ({
-            name: folder.id,
-            icon: '📁',
-            title: folder.name,
-            isFolder: true,
-            folderId: folder.id
-        }))];
-
-        switch (sortOrder) {
-            case 'a-z':
-                return allApps.sort((a, b) => a.title.localeCompare(b.title));
-            case 'z-a':
-                return allApps.sort((a, b) => b.title.localeCompare(a.title));
-            default:
-                return allApps;
-        }
-    };
+    const [folders, setFolders] = useState<Array<{ id: string; name: string; isEditing: boolean }>>([]);
+    const [sortOrder, setSortOrder] = useState<'default' | 'a-z' | 'z-a'>('default');
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; visible: boolean }>({ x: 0, y: 0, visible: false });
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     useEffect(() => {
-        const checkMobile = () => {
-            const mobile = window.innerWidth < 768;
-            setIsMobile(mobile);
-        };
-
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
 
-        const timer = setInterval(() => {
-            setCurrentTime(new Date().toLocaleTimeString());
-        }, 1000);
+        const tick = () => {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            setTime(`${h}:${m}`);
+            setDateInfo({
+                day: now.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase(),
+                date: String(now.getDate()),
+                month: now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase(),
+            });
+        };
+        tick();
+        const timer = setInterval(tick, 1000);
 
-        // Battery API
         if ('getBattery' in navigator) {
-            (navigator as any).getBattery().then((battery: any) => {
-                setBatteryLevel(Math.round(battery.level * 100));
-                setIsCharging(battery.charging);
-
-                battery.addEventListener('levelchange', () => {
-                    setBatteryLevel(Math.round(battery.level * 100));
-                });
-
-                battery.addEventListener('chargingchange', () => {
-                    setIsCharging(battery.charging);
-                });
+            (navigator as any).getBattery().then((b: any) => {
+                setBatteryLevel(Math.round(b.level * 100));
+                setIsCharging(b.charging);
+                b.addEventListener('levelchange', () => setBatteryLevel(Math.round(b.level * 100)));
+                b.addEventListener('chargingchange', () => setIsCharging(b.charging));
             });
         }
 
-        return () => {
-            clearInterval(timer);
-            window.removeEventListener('resize', checkMobile);
-        };
+        return () => { clearInterval(timer); window.removeEventListener('resize', checkMobile); };
     }, []);
 
-    const requestFullscreen = async () => {
-        try {
-            if (document.documentElement.requestFullscreen) {
-                await document.documentElement.requestFullscreen();
-            } else if ((document.documentElement as any).webkitRequestFullscreen) {
-                await (document.documentElement as any).webkitRequestFullscreen();
-            } else if ((document.documentElement as any).msRequestFullscreen) {
-                await (document.documentElement as any).msRequestFullscreen();
-            }
-        } catch (err) {
-            console.log('Fullscreen request failed:', err);
-        }
-    };
-
-    useEffect(() => {
-        if (isMobile) {
-            const handleTouch = () => {
-                if (!document.fullscreenElement) {
-                    requestFullscreen();
-                }
-            };
-
-            document.addEventListener('touchstart', handleTouch);
-            return () => document.removeEventListener('touchstart', handleTouch);
-        }
-
-        requestFullscreen();
-
-        let isRequestingFullscreen = false;
-
-        const checkAndRequestFullscreen = async () => {
-            if (!isRequestingFullscreen && !document.fullscreenElement) {
-                isRequestingFullscreen = true;
-                await requestFullscreen();
-                setTimeout(() => {
-                    isRequestingFullscreen = false;
-                }, 1000);
-            }
-        };
-
-        const handleClick = () => {
-            checkAndRequestFullscreen();
-        };
-
-        const handleVisibilityChange = () => {
-            if (!document.hidden) {
-                setTimeout(() => {
-                    checkAndRequestFullscreen();
-                }, 100);
-            }
-        };
-
-        const handleFocus = () => {
-            setTimeout(() => {
-                checkAndRequestFullscreen();
-            }, 100);
-        };
-
-        const handleMouseMove = () => {
-            if (!document.fullscreenElement && !document.hidden) {
-                checkAndRequestFullscreen();
-            }
-        };
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        window.addEventListener('focus', handleFocus);
-        window.addEventListener('click', handleClick);
-        window.addEventListener('mousemove', handleMouseMove);
-
-        return () => {
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-            window.removeEventListener('focus', handleFocus);
-            window.removeEventListener('click', handleClick);
-            window.removeEventListener('mousemove', handleMouseMove);
-
-            if (document.exitFullscreen && document.fullscreenElement) {
-                document.exitFullscreen().catch(err => console.log('Exit fullscreen failed:', err));
-            }
-        };
-    }, [isMobile]);
-
-    interface AppItem {
-        folderId: string;
-        name: string;
-        icon: string;
-        title: string;
-        isFolder?: boolean;
-    }
-
-    const taskbarApps: AppItem[] = [
-        { name: 'about', icon: '🧑‍💼', title: 'About', isFolder: false, folderId: '' },
-        { name: 'projects', icon: '🗂️', title: 'Projects', isFolder: false, folderId: '' },
-        { name: 'skills', icon: '⚙️', title: 'Skills', isFolder: false, folderId: '' },
-        { name: 'experience', icon: '📊', title: 'Experience', isFolder: false, folderId: '' },
-        { name: 'contact', icon: '☎️', title: 'Contact', isFolder: false, folderId: '' },
-        { name: 'education', icon: '🏫', title: 'Education', isFolder: false, folderId: '' },
-        { name: 'leadership', icon: '👑', title: 'Leadership', isFolder: false, folderId: '' },
-        { name: 'help', icon: '🆘', title: 'Help', isFolder: false, folderId: '' },
-        { name: '2048', icon: '🎮', title: '2048', isFolder: false, folderId: '' },
-        { name: 'gitmerge', icon: '🔀', title: 'Git Game Merge', isFolder: false, folderId: '' },
-        { name: 'gameoflife', icon: '🧬', title: 'Game of Life', isFolder: false, folderId: '' },
-        { name: 'github', icon: '🐱', title: 'GitHub', isFolder: false, folderId: '' },
-        { name: 'linkedin', icon: '💼', title: 'LinkedIn', isFolder: false, folderId: '' },
-        { name: 'email', icon: '✉️', title: 'Mail', isFolder: false, folderId: '' },
-    ];
-
-    const taskbaricons: AppItem[] = [
-        { name: 'about', icon: '🧑‍💼', title: 'About', isFolder: false, folderId: '' },
-        { name: 'contact', icon: '☎️', title: 'Contact', isFolder: false, folderId: '' },
-        { name: 'linkedin', icon: '💼', title: 'LinkedIn', isFolder: false, folderId: '' },
-        { name: 'email', icon: '✉️', title: 'Mail', isFolder: false, folderId: '' },
-    ];
-
-    const filteredApps = taskbarApps.filter(app =>
-        app.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const handleContextMenu = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!isMobile) {
-            setContextMenu({
-                x: e.clientX,
-                y: e.clientY,
-                visible: true
-            });
-        }
-    };
-
     const openWindow = (type: string) => {
-        const existingWindow = windows.find(w => w.component === type && !w.isMinimized);
-        if (existingWindow) {
-            bringToFront(existingWindow.id);
-            setWindowHistory(prev => [...prev.filter(id => id !== existingWindow.id), existingWindow.id]);
-            return;
-        }
+        const existing = windows.find(w => w.component === type && !w.isMinimized);
+        if (existing) { bringToFront(existing.id); return; }
 
-        const minimizedWindow = windows.find(w => w.component === type && w.isMinimized);
-        if (minimizedWindow) {
-            restoreWindow(minimizedWindow.id);
-            setWindowHistory(prev => [...prev.filter(id => id !== minimizedWindow.id), minimizedWindow.id]);
-            return;
-        }
+        const minimized = windows.find(w => w.component === type && w.isMinimized);
+        if (minimized) { restoreWindow(minimized.id); return; }
 
-        let windowWidth = isMobile ? window.innerWidth : 800;
-        let windowHeight = isMobile ? (window.innerHeight - 50) : 600;
+        const sizeMap: Record<string, { w: number; h: number }> = {
+            gameoflife: { w: 700, h: 650 },
+            '2048': { w: 600, h: 750 },
+            gitmerge: { w: 900, h: 700 },
+        };
+        const def = sizeMap[type] ?? { w: 800, h: 600 };
+        const width = isMobile ? window.innerWidth : def.w;
+        const height = isMobile ? window.innerHeight - 56 : def.h;
+        const x = isMobile ? 0 : 80 + windows.length * 28;
+        const y = isMobile ? 0 : 60 + windows.length * 28;
 
-        if (type === 'doom') {
-            windowWidth = isMobile ? window.innerWidth : 640;
-            windowHeight = isMobile ? (window.innerHeight - 50) : 480;
-        } else if (type === 'gameoflife') {
-            windowWidth = isMobile ? window.innerWidth : 700;
-            windowHeight = isMobile ? (window.innerHeight - 50) : 650;
-        } else if (type === '2048') {
-            windowWidth = isMobile ? window.innerWidth : 600;
-            windowHeight = isMobile ? (window.innerHeight - 50) : 750;
-        } else if (type === 'gitmerge') {
-            windowWidth = isMobile ? window.innerWidth : 900;
-            windowHeight = isMobile ? (window.innerHeight - 50) : 700;
-        }
-
-        const windowX = isMobile ? 0 : (100 + windows.length * 30);
-        const windowY = isMobile ? 50 : (100 + windows.length * 30);
-
-        const newWindow: WindowData = {
+        const nw: WindowData = {
             id: `${type}-${Date.now()}`,
             title: type.charAt(0).toUpperCase() + type.slice(1),
             component: type,
             isMinimized: false,
             isMaximized: isMobile,
-            position: { x: windowX, y: windowY },
-            size: { width: windowWidth, height: windowHeight },
+            position: { x, y },
+            size: { width, height },
             zIndex: nextZIndex,
         };
-
-        setWindows(prev => [...prev, newWindow]);
-        setWindowHistory(prev => [...prev, newWindow.id]);
-        setNextZIndex(prev => prev + 1);
+        setWindows(p => [...p, nw]);
+        setWindowHistory(p => [...p, nw.id]);
+        setNextZIndex(p => p + 1);
     };
 
     const closeWindow = (id: string) => {
-        setWindows(prev => prev.filter(w => w.id !== id));
-        setWindowHistory(prev => {
-            const filtered = prev.filter(wId => wId !== id);
-            if (filtered.length > 0 && isMobile) {
-                const lastWindowId = filtered[filtered.length - 1];
-                restoreWindow(lastWindowId);
-            }
-            return filtered;
-        });
+        setWindows(p => p.filter(w => w.id !== id));
+        setWindowHistory(p => p.filter(wid => wid !== id));
     };
 
-    const minimizeWindow = (id: string) => {
-        setWindows(prev => prev.map(w =>
-            w.id === id ? { ...w, isMinimized: true } : w
-        ));
-        setWindowHistory(prev => {
-            const filtered = prev.filter(wId => wId !== id);
-            if (filtered.length > 0 && isMobile) {
-                const lastWindowId = filtered[filtered.length - 1];
-                restoreWindow(lastWindowId);
-            }
-            return filtered;
-        });
-    };
+    const minimizeWindow = (id: string) =>
+        setWindows(p => p.map(w => w.id === id ? { ...w, isMinimized: true } : w));
 
     const maximizeWindow = (id: string) => {
         if (isMobile) return;
-
-        setWindows(prev => prev.map(w => {
-            if (w.id === id) {
-                if (w.isMaximized) {
-                    // Un-maximize: restore to a default centered position with original size
-                    let originalWidth = 800;
-                    let originalHeight = 600;
-
-                    // Set specific sizes for special windows
-                    if (w.component === 'gameoflife') {
-                        originalWidth = 700;
-                        originalHeight = 650;
-                    } else if (w.component === '2048') {
-                        originalWidth = 600;
-                        originalHeight = 750;
-                    } else if (w.component === 'gitmerge') {
-                        originalWidth = 900;
-                        originalHeight = 700;
-                    }
-
-                    // Center the window
-                    const newX = (window.innerWidth - originalWidth) / 2;
-                    const newY = (window.innerHeight - 50 - originalHeight) / 2;
-
-                    return {
-                        ...w,
-                        isMaximized: false,
-                        position: { x: Math.max(0, newX), y: Math.max(50, newY) },
-                        size: { width: originalWidth, height: originalHeight }
-                    };
-                } else {
-                    // Maximize: full screen
-                    return {
-                        ...w,
-                        isMaximized: true,
-                        position: { x: 0, y: 0 },
-                        size: { width: window.innerWidth, height: window.innerHeight - 50 }
-                    };
-                }
+        setWindows(p => p.map(w => {
+            if (w.id !== id) return w;
+            if (w.isMaximized) {
+                const sm = { about: { w: 800, h: 600 }, gameoflife: { w: 700, h: 650 }, '2048': { w: 600, h: 750 }, gitmerge: { w: 900, h: 700 } } as any;
+                const s = sm[w.component] ?? { w: 800, h: 600 };
+                return { ...w, isMaximized: false, position: { x: (window.innerWidth - s.w) / 2, y: (window.innerHeight - 56 - s.h) / 2 }, size: { width: s.w, height: s.h } };
             }
-            return w;
+            return { ...w, isMaximized: true, position: { x: 0, y: 0 }, size: { width: window.innerWidth, height: window.innerHeight - 56 } };
         }));
     };
 
     const bringToFront = (id: string) => {
-        setWindows(prev => prev.map(w =>
-            w.id === id ? { ...w, zIndex: nextZIndex } : w
-        ));
-        setWindowHistory(prev => [...prev.filter(wId => wId !== id), id]);
-        setNextZIndex(prev => prev + 1);
-    };
-
-    const updateWindowPosition = (id: string, position: { x: number; y: number }) => {
-        setWindows(prev => prev.map(w =>
-            w.id === id ? { ...w, position } : w
-        ));
+        setWindows(p => p.map(w => w.id === id ? { ...w, zIndex: nextZIndex } : w));
+        setWindowHistory(p => [...p.filter(wid => wid !== id), id]);
+        setNextZIndex(p => p + 1);
     };
 
     const restoreWindow = (id: string) => {
-        setWindows(prev => prev.map(w =>
-            w.id === id ? { ...w, isMinimized: false } : w
-        ));
+        setWindows(p => p.map(w => w.id === id ? { ...w, isMinimized: false } : w));
         bringToFront(id);
     };
 
-    const isAppMinimized = (appName: string) => {
-        return windows.some(w => w.component === appName && w.isMinimized);
+    const updateWindowPosition = (id: string, position: { x: number; y: number }) =>
+        setWindows(p => p.map(w => w.id === id ? { ...w, position } : w));
+
+    const handleExternal = (name: string) => {
+        const ext = EXTERNAL.find(e => e.name === name);
+        if (!ext) return;
+        if (ext.href.startsWith('mailto:')) window.open(ext.href);
+        else window.open(ext.href, '_blank');
     };
 
-    const getCurrentWindow = () => {
-        if (windowHistory.length === 0) return null;
-        const currentId = windowHistory[windowHistory.length - 1];
-        return windows.find(w => w.id === currentId && !w.isMinimized);
+    const handleCreateFolder = () => {
+        setFolders(prev => [...prev, { id: `folder-${Date.now()}`, name: '', isEditing: true }]);
+        setContextMenu({ x: 0, y: 0, visible: false });
     };
 
-    const handleMobileBack = () => {
-        const currentWindow = getCurrentWindow();
-        if (currentWindow) {
-            minimizeWindow(currentWindow.id);
-        }
+    const updateFolderName = (id: string, name: string) =>
+        setFolders(prev => prev.map(f => f.id === id ? { ...f, name } : f));
+
+    const finishEditingFolder = (id: string) =>
+        setFolders(prev => prev.map(f => f.id === id ? { ...f, isEditing: false } : f));
+
+    const handleRefresh = () => {
+        setIsRefreshing(true);
+        setContextMenu({ x: 0, y: 0, visible: false });
+        setTimeout(() => setIsRefreshing(false), 400);
     };
 
-    const handleMobileHome = () => {
-        const currentWindow = getCurrentWindow();
-        if (currentWindow) {
-            closeWindow(currentWindow.id);
-        }
+    const handleContextMenu = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (!isMobile) setContextMenu({ x: e.clientX, y: e.clientY, visible: true });
     };
+
+    const getSortedApps = () => {
+        const base = APPS.filter(a => a.title.toLowerCase().includes(searchTerm.toLowerCase()));
+        const folderItems = folders.map(f => ({ name: f.id, abbr: 'FD', title: f.name || 'New Folder', accent: false, isFolder: true, folderId: f.id }));
+        const all = [...base.map(a => ({ ...a, isFolder: false, folderId: '' })), ...folderItems];
+        if (sortOrder === 'a-z') return all.sort((a, b) => a.title.localeCompare(b.title));
+        if (sortOrder === 'z-a') return all.sort((a, b) => b.title.localeCompare(a.title));
+        return all;
+    };
+
+    const mono: React.CSSProperties = { fontFamily: "'Fragment Mono', monospace" };
+    const bebas: React.CSSProperties = { fontFamily: "'Bebas Neue', sans-serif" };
+    const border3 = `3px solid ${Y}`;
+    const border3w = '3px solid #fff';
+    const border3dim = '3px solid rgba(255,255,255,0.12)';
 
     return (
-        <div
-            className="h-screen w-screen bg-gradient-to-br from-blue-900 to-purple-900 relative overflow-hidden"
-            onContextMenu={handleContextMenu}
-            onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                    setContextMenu({ x: 0, y: 0, visible: false });
-                }
-            }}
-            style={{
-                backgroundImage: "url('/images/trace.svg')",
-                backgroundSize: 'cover',
-            }}
-        >
-            {showTip && (
-                <div className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4">
-                    <div className="bg-[#1a1a1a] border border-blue-500 rounded-lg p-6 max-w-md w-full">
-                        <div className="text-blue-400 text-xl font-bold mb-4">
-                            🖥️ Desktop Mode Active
-                        </div>
-                     
-                        <div className="text-gray-300 mb-4 leading-relaxed">
-                            Welcome to Desktop Mode! {isMobile ? 'Tap' : 'Double-click'} icons to open applications.
-                        </div>
-                        <div className="bg-slate-800 border border-slate-600 rounded p-3 mb-4">
-                            <div className="text-green-400 text-sm font-semibold mb-2">💡 Pro Tip:</div>
-                            <div className="text-gray-300 text-sm">
-                                Return to Terminal Mode anytime by clicking the settings icon (⚙️) in the {isMobile ? 'bottom' : 'taskbar'} and selecting "Switch to Terminal".
-                                {!isMobile && ' P.S. - Keep an eye out for the Easter egg! 🥚'}
+        <>
+            <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fragment+Mono:ital@0;1&family=Lexend:wght@200;300;400;500&display=swap');
+        * { box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: ${Y}; }
+        .app-btn:hover { background: ${Y} !important; }
+        .app-btn:hover .app-abbr { color: #000 !important; }
+        .app-btn:hover .app-lbl  { color: #000 !important; }
+        .ext-btn:hover { background: ${Y} !important; color: #000 !important; border-color: ${Y} !important; }
+        .quick-btn:hover { background: ${Y} !important; color: #000 !important; }
+        .tb-win:hover { background: ${Y} !important; color: #000 !important; border-color: ${Y} !important; }
+        .tb-min:hover { border-color: rgba(240,206,50,0.5) !important; color: rgba(240,206,50,0.7) !important; }
+        .sys-btn:hover { border-color: ${Y} !important; color: ${Y} !important; }
+      `}</style>
+
+            <div onContextMenu={handleContextMenu}
+                onClick={(e) => {
+                    if (e.target === e.currentTarget) setContextMenu({ x: 0, y: 0, visible: false });
+                }} style={{
+                    height: '100vh', width: '100vw', background: BG, position: 'relative', overflow: 'hidden',
+                    backgroundImage: `linear-gradient(rgba(240,206,50,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(240,206,50,0.035) 1px,transparent 1px)`,
+                    backgroundSize: '40px 40px', userSelect: 'none'
+                }}>
+
+                {/* ── WELCOME TIP ── */}
+                {showTip && (
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+                        <div style={{ background: CARD, border: border3, padding: 32, maxWidth: 420, width: '100%' }}>
+                            <div style={{ ...bebas, fontSize: 28, color: Y, letterSpacing: '0.1em', marginBottom: 8 }}>// DESKTOP MODE</div>
+                            <div style={{ ...mono, fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.8, marginBottom: 20 }}>
+                                {isMobile ? 'Tap' : 'Double-click'} any app block to launch it. Use the taskbar to manage open windows.
                             </div>
-                        </div>
-                        <button
-                            onClick={onCloseTip}
-                            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded transition-colors"
-                        >
-                            Got it!
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {isMobile && (
-                <div className="absolute top-0 left-0 right-0 h-8 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-between px-4 z-40">
-                    <div className="flex items-center space-x-2">
-                        <span className="text-white text-xs">{currentTime}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        {batteryLevel !== null && (
-                            <div className="flex items-center space-x-1">
-                                <span className="text-white text-xs">{batteryLevel}%</span>
-                                <span className="text-white text-xs">
-                                    {isCharging ? '⚡' : batteryLevel > 20 ? '🔋' : '🪫'}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            <div
-                className={`absolute inset-0 bg-cover bg-center transition-all duration-500 z-0 ${isRefreshing ? 'opacity-0' : 'opacity-100'}`}
-                onContextMenu={handleContextMenu}
-            />
-
-            <div
-                className="absolute inset-0 bg-black pointer-events-none transition-opacity duration-300 z-40"
-                style={{ opacity: (100 - brightness) / 100 }}
-            />
-
-            {!isMobile && contextMenu.visible && (
-                <>
-                    <div
-                        className="fixed inset-0 z-45"
-                        onClick={() => setContextMenu({ x: 0, y: 0, visible: false })}
-                    />
-                    <div
-                        className="absolute bg-gray-800 bg-opacity-95 backdrop-blur-lg rounded-lg border border-gray-600 shadow-2xl z-50 py-2 min-w-60"
-                        style={{
-                            left: Math.min(contextMenu.x, window.innerWidth - 200),
-                            top: Math.min(contextMenu.y, window.innerHeight - 200),
-                            padding: '0.5rem'
-                        }}
-                    >
-                        <div className="px-4 py-2 text-gray-300 text-sm border-b border-gray-600 flex items-center space-x-3" style={{ padding: '0.5rem' }}>
-                            <span>🔧</span>
-                            <span>Sort by</span>
-                        </div>
-                        <button
-                            onClick={() => {
-                                setSortOrder('default');
-                                setContextMenu({ x: 0, y: 0, visible: false });
-                            }}
-                            style={{ padding: '0.5rem' }}
-                            className={`w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition-colors flex items-center justify-between ${sortOrder === 'default' ? 'bg-gray-700' : ''}`}
-                        >
-                            <span className="flex items-center space-x-3">
-                                <span>📋</span>
-                                <span>Default</span>
-                            </span>
-                            {sortOrder === 'default' && <span className="text-blue-400">✓</span>}
-                        </button>
-                        <button
-                            onClick={() => {
-                                setSortOrder('a-z');
-                                setContextMenu({ x: 0, y: 0, visible: false });
-                            }}
-                            style={{ padding: '0.5rem' }}
-                            className={`w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition-colors flex items-center justify-between ${sortOrder === 'a-z' ? 'bg-gray-700' : ''}`}
-                        >
-                            <span className="flex items-center space-x-3">
-                                <span>🔤</span>
-                                <span>A - Z</span>
-                            </span>
-                            {sortOrder === 'a-z' && <span className="text-blue-400">✓</span>}
-                        </button>
-                        <button
-                            onClick={() => {
-                                setSortOrder('z-a');
-                                setContextMenu({ x: 0, y: 0, visible: false });
-                            }}
-                            style={{ padding: '0.5rem' }}
-                            className={`w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition-colors flex items-center justify-between ${sortOrder === 'z-a' ? 'bg-gray-700' : ''}`}
-                        >
-                            <span className="flex items-center space-x-3">
-                                <span>🔤</span>
-                                <span>Z - A</span>
-                            </span>
-                            {sortOrder === 'z-a' && <span className="text-blue-400">✓</span>}
-                        </button>
-                        <div className="border-t border-gray-600 mt-2 pt-2">
-                            <button
-                                onClick={handleRefresh}
-                                className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition-colors flex items-center space-x-3"
-                                style={{ padding: '0.5rem' }}
-                            >
-                                <span>🔄</span>
-                                <span>Refresh</span>
-                            </button>
-                            <button
-                                onClick={() => {
-                                    onSwitchToTerminal();
-                                    setContextMenu({ x: 0, y: 0, visible: false });
-                                }}
-                                className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition-colors flex items-center space-x-3"
-                                style={{ padding: '0.5rem' }}
-                            >
-                                <span>🖥️</span>
-                                <span>Switch to Terminal</span>
-                            </button>
-                            <button
-                                onClick={handleCreateFolder}
-                                style={{ padding: '0.5rem' }}
-                                className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition-colors flex items-center space-x-3"
-                            >
-                                <span>📁</span>
-                                <span>New Folder</span>
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )}
-
-            <div className={`absolute ${isMobile ? 'top-12 left-4 right-4' : 'top-20 left-8 right-8'} z-30`}>
-                <div className={`grid ${isMobile ? 'pt-15 grid-cols-4 gap-4' : 'grid-cols-8 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-x-8 gap-y-6'} auto-rows-min`}>
-                    {getSortedApps().map((item, index) => (
-                        <div
-                            key={item.name}
-                            className="flex flex-col items-center cursor-pointer group"
-                            onDoubleClick={() => item.isFolder ? openWindow('folder') : handleIconClick(item.name)}
-                            onClick={() => isMobile && (item.isFolder ? openWindow('folder') : handleIconClick(item.name))}
-                            style={{ userSelect: 'none' }}
-                        >
-                            <div className={`${isMobile ? 'w-16 h-16' : 'w-20 h-20'} bg-gray-300 bg-opacity-40 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-opacity-60 transition-all duration-200 group-hover:scale-105 border border-white border-opacity-30 shadow-lg`}>
-                                {!item.isFolder ? (
-                                    <>
-                                        <img
-                                            src={`/icons/${item.name}.png`}
-                                            alt={item.title}
-                                            className={`${isMobile ? 'w-10 h-10' : 'w-12 h-12'} object-contain`}
-                                            onError={(e) => {
-                                                const target = e.currentTarget;
-                                                const fallback = target.parentElement?.querySelector('.fallback-icon');
-                                                if (fallback) {
-                                                    target.style.display = 'none';
-                                                    (fallback as HTMLElement).style.display = 'block';
-                                                }
-                                            }}
-                                        />
-                                        <span className={`${isMobile ? 'text-2xl' : 'text-3xl'} fallback-icon`} style={{ display: 'none' }}>
-                                            {item.icon}
-                                        </span>
-                                    </>
-                                ) : (
-                                    <span className={`${isMobile ? 'text-2xl' : 'text-3xl'}`}>{item.icon}</span>
-                                )}
-                            </div>
-                            {item.isFolder && folders.find(f => f.id === item.folderId)?.isEditing ? (
-                                <input
-                                    type="text"
-                                    value={item.title}
-                                    onChange={(e) => updateFolderName(item.folderId, e.target.value)}
-                                    onBlur={() => finishEditingFolder(item.folderId)}
-                                    onKeyDown={(e) => e.key === 'Enter' && finishEditingFolder(item.folderId)}
-                                    className={`text-white ${isMobile ? 'text-xs' : 'text-sm'} mt-2 text-center px-2 py-1 rounded-md bg-black bg-opacity-50 border border-white border-opacity-30 ${isMobile ? 'max-w-16' : 'max-w-20'} outline-none`}
-                                    autoFocus
-                                />
-                            ) : (
-                                <span className={`text-white ${isMobile ? 'text-xs' : 'text-sm'} mt-2 text-center ${isMobile ? 'max-w-16' : 'max-w-20'} truncate drop-shadow-sm`} style={{ paddingTop: '0.3rem' }}>
-                                    {item.title}
-                                </span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {windows.map(window => (
-                !window.isMinimized && (
-                    <Window
-                        key={window.id}
-                        id={window.id}
-                        title={window.title}
-                        component={window.component}
-                        position={window.position}
-                        size={window.size}
-                        isMaximized={window.isMaximized}
-                        zIndex={window.zIndex}
-                        brightness={brightness}
-                        isMobile={isMobile}
-                        onClose={closeWindow}
-                        onMinimize={minimizeWindow}
-                        onMaximize={maximizeWindow}
-                        onBringToFront={bringToFront}
-                        onUpdatePosition={updateWindowPosition}
-                        openContactWindow={() => openWindow('contact')}
-                    />
-                )
-            ))}
-
-            {showSystemMenu && (
-                <div className="fixed inset-0 z-[10000]">
-                    <SystemMenu
-                        onClose={() => setShowSystemMenu(false)}
-                        onSwitchToTerminal={onSwitchToTerminal}
-                        onBrightnessChange={setBrightness}
-                        brightness={brightness}
-                    />
-                </div>
-            )}
-
-            <div className={`absolute bottom-0 left-0 right-0 ${isMobile ? 'h-12' : 'h-12'} bg-gray-800 bg-opacity-95 backdrop-blur-sm flex items-center ${isMobile ? 'justify-around px-2' : 'justify-between px-4'} border-t border-gray-600 z-30`}>
-                {isMobile ? (
-                    <>
-                        <button
-                            onClick={() => setShowSystemMenu(!showSystemMenu)}
-                            className="flex flex-col items-center justify-center px-4 py-1 hover:bg-gray-700 rounded-lg transition-colors"
-                        >
-                            <span className="text-xl ">⚙️</span>
-                        </button>
-
-                        <button
-                            onClick={handleMobileHome}
-                            disabled={!getCurrentWindow()}
-                            className={`flex flex-col items-center justify-center px-4 py-1 hover:bg-gray-700 rounded-lg transition-colors ${!getCurrentWindow() ? 'opacity-50' : ''}`}
-                        >
-                            <span className="text-3xl text-white">⌂</span>
-                        </button>
-
-                        <button
-                            onClick={handleMobileBack}
-                            disabled={!getCurrentWindow()}
-                            className={`flex flex-col items-center justify-center px-4 py-1 hover:bg-gray-700 rounded-lg transition-colors ${!getCurrentWindow() ? 'opacity-50' : ''}`}
-                        >
-                            <span className="text-3xl text-white">◁</span>
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        <div className="flex items-center">
-                            <button
-                                key={'projects'}
-                                onClick={() => openWindow('projects')}
-                                className={`flex flex-col items-center justify-center w-12 h-10 hover:bg-gray-700 rounded-lg transition-colors group relative ${isAppMinimized('projects') ? 'border-b-2 border-blue-400' : ''}`}
-                                title={'projects'}
-                            >
-                                <img
-                                    src={`/icons/projects.png`}
-                                    alt={'projects'}
-                                    className="w-7 h-7 object-contain"
-                                    onError={(e) => {
-                                        const target = e.currentTarget;
-                                        const fallback = target.parentElement?.querySelector('.fallback-icon');
-                                        if (fallback) {
-                                            target.style.display = 'none';
-                                            (fallback as HTMLElement).style.display = 'block';
-                                        }
-                                    }}
-                                />
-                            </button>
-                            <div className="left-1/4 p-2">
-                                <div className="flex items-center bg-white bg-opacity-40 backdrop-blur-lg rounded-full px-4 py-0.5 border border-black border-opacity-30 w-66">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-5 w-5 text-gray-600 mr-2 flex-shrink-0"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M21 21l-4.35-4.35M5 11a6 6 0 1112 0 6 6 0 01-12 0z"
-                                        />
-                                    </svg>
-                                    <input
-                                        type="text"
-                                        placeholder="Search applications..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="bg-transparent text-black placeholder-gray-600 outline-none w-full py-1 text-sm"
-                                    />
+                            <div style={{ background: '#0a0a0a', border: '2px solid rgba(240,206,50,0.3)', padding: 16, marginBottom: 20 }}>
+                                <div style={{ ...mono, fontSize: 10, color: Y, letterSpacing: '0.2em', marginBottom: 8 }}>// PRO TIP</div>
+                                <div style={{ ...mono, fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
+                                    Click SYS ⚙ in the taskbar to switch to terminal mode.{!isMobile && ' Watch out for the Easter egg. 🥚'}
                                 </div>
                             </div>
+                            <button onClick={onCloseTip} style={{ ...bebas, width: '100%', background: Y, color: '#000', border: 'none', padding: '12px 0', fontSize: 18, letterSpacing: '0.15em', cursor: 'pointer' }}>
+                                ACKNOWLEDGED →
+                            </button>
+                        </div>
+                    </div>
+                )}
 
-                            <div className="flex items-center space-x-2">
-                                {taskbaricons.map(app => (
-                                    <button
-                                        key={app.name}
-                                        onClick={() => handleIconClick(app.name)}
-                                        className={`flex flex-col items-center justify-center w-12 h-10 hover:bg-gray-700 rounded-lg transition-colors group relative ${isAppMinimized(app.name) ? 'border-b-2 border-blue-400' : ''}`}
-                                        title={app.title}
-                                    >
-                                        <img
-                                            src={`/icons/${app.name}.png`}
-                                            alt={app.title}
-                                            className="w-7 h-7 object-contain"
-                                            onError={(e) => {
-                                                const target = e.currentTarget;
-                                                const fallback = target.parentElement?.querySelector('.fallback-icon');
-                                                if (fallback) {
-                                                    target.style.display = 'none';
-                                                    (fallback as HTMLElement).style.display = 'block';
-                                                }
-                                            }}
-                                        />
-                                        <span className="text-3xl fallback-icon" style={{ display: 'none' }}>
-                                            {app.icon}
-                                        </span>
+                {/* ── DESKTOP WIDGETS (not mobile) ── */}
+                {!isMobile && (
+                    <div style={{
+                        position: 'absolute', inset: 0, bottom: 56, padding: 20, display: 'grid', gap: 12,
+                        gridTemplateColumns: '260px 1fr 220px', gridTemplateRows: '180px 1fr'
+                    }}>
+
+                        {/* ── PROFILE WIDGET (tall left) ── */}
+                        <div style={{ gridRow: '1 / 3', background: CARD, border: border3, padding: '28px 24px', display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ ...mono, fontSize: 9, letterSpacing: '0.3em', color: 'rgba(240,206,50,0.5)', textTransform: 'uppercase', marginBottom: 20 }}>// sys.identity</div>
+                            <div style={{ ...bebas, fontSize: 52, lineHeight: 0.85, color: Y, letterSpacing: '0.02em' }}>OM<br />GAIKWAD</div>
+                            <div style={{ ...mono, fontSize: 9, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', marginTop: 14, lineHeight: 2 }}>
+                                FULL STACK ENG.<br />ENTERPRISE SYS.<br />AI/ML INTEGRATION
+                            </div>
+
+                            <div style={{ flex: 1 }} />
+
+                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 16, marginBottom: 12 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: Y, animation: 'pulse 2s infinite' }} />
+                                    <span style={{ ...mono, fontSize: 9, letterSpacing: '0.18em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>OPEN TO WORK</span>
+                                </div>
+                                <div style={{ display: 'flex', gap: 6 }}>
+                                    {EXTERNAL.map(ext => (
+                                        <button key={ext.name} className="ext-btn" onClick={() => handleExternal(ext.name)}
+                                            style={{ flex: 1, border: '2px solid rgba(240,206,50,0.25)', background: 'transparent', padding: '8px 4px', cursor: 'pointer', transition: 'all 0.15s', ...bebas, fontSize: 14, letterSpacing: '0.08em', color: Y }}>
+                                            {ext.abbr}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ── CLOCK WIDGET (center top) ── */}
+                        <div style={{ background: CARD, border: border3w, padding: '0 32px', display: 'flex', alignItems: 'center', gap: 24, overflow: 'hidden', position: 'relative' }}>
+                            <div>
+                                <div style={{ ...mono, fontSize: 9, letterSpacing: '0.3em', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginBottom: 6 }}>{dateInfo.day}</div>
+                                <div style={{ ...bebas, fontSize: 88, lineHeight: 0.85, color: '#fff', letterSpacing: '0.03em' }}>{time}</div>
+                                <div style={{ ...mono, fontSize: 9, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginTop: 10 }}>{dateInfo.month}</div>
+                            </div>
+                            <div style={{ marginLeft: 'auto', borderLeft: '3px solid rgba(255,255,255,0.06)', paddingLeft: 24, lineHeight: 0.8 }}>
+                                <div style={{ ...bebas, fontSize: 120, color: 'rgba(255,255,255,0.04)', lineHeight: 0.8 }}>{dateInfo.date}</div>
+                            </div>
+                            <div style={{ position: 'absolute', bottom: 12, right: 16, ...mono, fontSize: 9, letterSpacing: '0.2em', color: 'rgba(240,206,50,0.3)' }}>LOCAL TIME</div>
+                        </div>
+
+                        {/* ── STATUS WIDGET (right top) ── */}
+                        <div style={{ background: CARD, border: border3w, padding: '20px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                            <div style={{ ...mono, fontSize: 9, letterSpacing: '0.25em', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase' }}>// sys.status</div>
+                            <div>
+                                {batteryLevel !== null ? (
+                                    <>
+                                        <div style={{ ...bebas, fontSize: 52, color: Y, lineHeight: 1, letterSpacing: '0.02em' }}>{batteryLevel}%</div>
+                                        <div style={{ ...mono, fontSize: 9, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>{isCharging ? '⚡ CHARGING' : 'BATTERY'}</div>
+                                    </>
+                                ) : (
+                                    <div style={{ ...bebas, fontSize: 36, color: 'rgba(255,255,255,0.1)', letterSpacing: '0.05em' }}>--:--</div>
+                                )}
+                            </div>
+                            <button className="sys-btn" onClick={onSwitchToTerminal}
+                                style={{ background: 'transparent', border: '2px solid rgba(255,255,255,0.15)', padding: '8px 12px', cursor: 'pointer', transition: 'all 0.15s', ...mono, fontSize: 9, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', textAlign: 'center' }}>
+                                → TERMINAL
+                            </button>
+                        </div>
+
+                        {/* ── APP GRID WIDGET (center bottom) ── */}
+                        <div style={{ background: CARD, border: border3w, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                            {/* search bar */}
+                            <div style={{ borderBottom: border3dim, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                                <span style={{ ...mono, fontSize: 14, color: 'rgba(255,255,255,0.2)' }}>⌕</span>
+                                <input type="text" placeholder="SEARCH APPS..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                                    style={{ background: 'transparent', border: 'none', outline: 'none', flex: 1, ...mono, fontSize: 11, letterSpacing: '0.2em', color: '#fff', caretColor: Y }}
+                                />
+                                {searchTerm && (
+                                    <button onClick={() => setSearchTerm('')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', ...mono, fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>✕</button>
+                                )}
+                            </div>
+                            {/* apps */}
+                            <div style={{
+                                flex: 1, overflowY: 'auto', padding: 12,
+                                display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(82px, 1fr))', gap: 8, alignContent: 'start'
+                            }}>
+                                {getSortedApps().map(app => (
+                                    <button key={app.name} className="app-btn"
+                                        onDoubleClick={() => app.isFolder ? openWindow('folder') : openWindow(app.name)}
+                                        onClick={() => isMobile && (app.isFolder ? openWindow('folder') : openWindow(app.name))}
+                                        style={{ background: 'transparent', border: `2px solid rgba(255,255,255,0.1)`, padding: '14px 8px', cursor: 'pointer', transition: 'all 0.12s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                                        {app.isFolder && (folders.find(f => f.id === app.name)?.isEditing) ? (
+                                            <input
+                                                autoFocus
+                                                type="text"
+                                                value={app.title === 'New Folder' ? '' : app.title}
+                                                onChange={e => updateFolderName(app.name, e.target.value)}
+                                                onBlur={() => finishEditingFolder(app.name)}
+                                                onKeyDown={e => e.key === 'Enter' && finishEditingFolder(app.name)}
+                                                onClick={e => e.stopPropagation()}
+                                                style={{ background: '#000', border: `1px solid ${Y}`, color: '#fff', outline: 'none', width: '90%', textAlign: 'center', fontFamily: 'Fragment Mono, monospace', fontSize: 9, padding: '2px 4px', letterSpacing: '0.1em' }}
+                                            />
+                                        ) : (
+                                            <>
+                                                <span className="app-abbr" style={{ ...bebas, fontSize: 24, color: app.accent ? Y : app.isFolder ? Y : '#fff', letterSpacing: '0.04em', lineHeight: 1, transition: 'color 0.12s' }}>
+                                                    {app.abbr}
+                                                </span>
+                                                <span className="app-lbl" style={{ ...mono, fontSize: 8, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', transition: 'color 0.12s', maxWidth: 76, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    {app.title}
+                                                </span>
+                                            </>
+                                        )}
                                     </button>
                                 ))}
                             </div>
                         </div>
-                        <div className="flex items-center space-x-1">
-                            <span className="text-white text-sm">{currentTime}</span>
-                            <button
-                                onClick={() => setShowSystemMenu(!showSystemMenu)}
-                                className="text-white hover:bg-gray-700 px-2 py-1 rounded transition-colors"
-                            >
-                                ⚙️
-                            </button>
+
+                        {/* ── QUICK ACCESS WIDGET (right bottom) ── */}
+                        <div style={{ background: Y, border: `3px solid ${Y}`, padding: '20px 18px', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+                            <div style={{ ...mono, fontSize: 9, letterSpacing: '0.3em', color: 'rgba(0,0,0,0.45)', textTransform: 'uppercase', marginBottom: 16 }}>// Double.Click</div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+                                {QUICK.map(name => {
+                                    const app = APPS.find(a => a.name === name);
+                                    return (
+                                        <button key={name} className="quick-btn"
+                                            onDoubleClick={() => openWindow(name)}
+                                            onClick={() => isMobile && openWindow(name)}
+                                            style={{ background: '#000', border: '3px solid #000', padding: '10px 14px', cursor: 'pointer', transition: 'all 0.12s', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', ...bebas, fontSize: 16, letterSpacing: '0.1em', color: Y }}>
+                                            <span>{app?.title?.toUpperCase()}</span>
+                                            <span style={{ fontSize: 14 }}>→</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <div style={{ ...bebas, fontSize: 100, lineHeight: 0.8, color: 'rgba(0,0,0,0.08)', position: 'absolute', bottom: -10, right: -4, pointerEvents: 'none' }}>↗</div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── MOBILE LAYOUT ── */}
+                {isMobile && (
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 56, overflowY: 'auto', padding: 12 }}>
+                        {/* mobile clock bar */}
+                        <div style={{ background: CARD, border: border3, padding: '12px 16px', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div style={{ ...bebas, fontSize: 32, color: Y, letterSpacing: '0.05em' }}>{time}</div>
+                            <div style={{ ...mono, fontSize: 9, color: 'rgba(255,255,255,0.3)', textAlign: 'right', textTransform: 'uppercase' }}>
+                                {dateInfo.day}<br />{dateInfo.month}
+                            </div>
+                        </div>
+                        {/* mobile search */}
+                        <div style={{ background: CARD, border: border3w, padding: '10px 14px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <span style={{ ...mono, fontSize: 13, color: 'rgba(255,255,255,0.2)' }}>⌕</span>
+                            <input type="text" placeholder="SEARCH..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                                style={{ background: 'transparent', border: 'none', outline: 'none', flex: 1, ...mono, fontSize: 11, letterSpacing: '0.15em', color: '#fff', caretColor: Y }} />
+                        </div>
+                        {/* mobile app grid */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                            {getSortedApps().map(app => (
+                                <button key={app.name} className="app-btn"
+                                    onDoubleClick={() => app.isFolder ? openWindow('folder') : openWindow(app.name)}
+                                    onClick={() => isMobile && (app.isFolder ? openWindow('folder') : openWindow(app.name))}
+                                    style={{ background: 'transparent', border: `2px solid rgba(255,255,255,0.1)`, padding: '14px 8px', cursor: 'pointer', transition: 'all 0.12s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                                    {app.isFolder && (folders.find(f => f.id === app.name)?.isEditing) ? (
+                                        <input
+                                            autoFocus
+                                            type="text"
+                                            value={app.title === 'New Folder' ? '' : app.title}
+                                            onChange={e => updateFolderName(app.name, e.target.value)}
+                                            onBlur={() => finishEditingFolder(app.name)}
+                                            onKeyDown={e => e.key === 'Enter' && finishEditingFolder(app.name)}
+                                            onClick={e => e.stopPropagation()}
+                                            style={{ background: '#000', border: `1px solid ${Y}`, color: '#fff', outline: 'none', width: '90%', textAlign: 'center', fontFamily: 'Fragment Mono, monospace', fontSize: 9, padding: '2px 4px', letterSpacing: '0.1em' }}
+                                        />
+                                    ) : (
+                                        <>
+                                            <span className="app-abbr" style={{ ...bebas, fontSize: 24, color: app.accent ? Y : app.isFolder ? Y : '#fff', letterSpacing: '0.04em', lineHeight: 1, transition: 'color 0.12s' }}>
+                                                {app.abbr}
+                                            </span>
+                                            <span className="app-lbl" style={{ ...mono, fontSize: 8, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', transition: 'color 0.12s', maxWidth: 76, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {app.title}
+                                            </span>
+                                        </>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── CONTEXT MENU ── */}
+                {!isMobile && contextMenu.visible && (
+                    <>
+                        <div style={{ position: 'fixed', inset: 0, zIndex: 998 }} onClick={() => setContextMenu({ x: 0, y: 0, visible: false })} />
+                        <div style={{
+                            position: 'absolute', zIndex: 999,
+                            left: Math.min(contextMenu.x, window.innerWidth - 220),
+                            top: Math.min(contextMenu.y, window.innerHeight - 280),
+                            width: 220, background: '#0a0a0a', border: `3px solid ${Y}`,
+                            boxShadow: `4px 4px 0 ${Y}`,
+                        }}>
+                            {/* Header */}
+                            <div style={{ background: '#000', borderBottom: `2px solid rgba(240,206,50,0.3)`, padding: '8px 14px', ...mono, fontSize: 9, color: 'rgba(240,206,50,0.5)', letterSpacing: '0.25em', textTransform: 'uppercase' }}>
+        // desktop.ctx
+                            </div>
+
+                            {/* Sort section */}
+                            <div style={{ borderBottom: '2px solid rgba(255,255,255,0.07)', padding: '6px 0' }}>
+                                <div style={{ padding: '6px 14px', ...mono, fontSize: 9, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>SORT BY</div>
+                                {(['default', 'a-z', 'z-a'] as const).map(s => (
+                                    <button key={s} onClick={() => { setSortOrder(s); setContextMenu({ x: 0, y: 0, visible: false }); }}
+                                        style={{ width: '100%', background: sortOrder === s ? 'rgba(240,206,50,0.1)' : 'transparent', border: 'none', padding: '8px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'background 0.12s' }}
+                                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(240,206,50,0.08)')}
+                                        onMouseLeave={e => (e.currentTarget.style.background = sortOrder === s ? 'rgba(240,206,50,0.1)' : 'transparent')}>
+                                        <span style={{ ...mono, fontSize: 10, color: sortOrder === s ? Y : 'rgba(255,255,255,0.5)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                                            {s === 'default' ? 'DEFAULT' : s.toUpperCase()}
+                                        </span>
+                                        {sortOrder === s && <span style={{ ...mono, fontSize: 10, color: Y }}>✓</span>}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Actions */}
+                            <div style={{ padding: '6px 0' }}>
+                                {[
+                                    { label: 'REFRESH', icon: '↺', fn: handleRefresh },
+                                    { label: 'NEW FOLDER', icon: '▣', fn: handleCreateFolder },
+                                    { label: 'TERMINAL MODE', icon: '→', fn: () => { onSwitchToTerminal(); setContextMenu({ x: 0, y: 0, visible: false }); } },
+                                ].map(({ label, icon, fn }) => (
+                                    <button key={label} onClick={fn}
+                                        style={{ width: '100%', background: 'transparent', border: 'none', padding: '9px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, transition: 'background 0.12s' }}
+                                        onMouseEnter={e => { e.currentTarget.style.background = Y; (e.currentTarget.querySelector('.ctx-lbl') as HTMLElement).style.color = '#000'; (e.currentTarget.querySelector('.ctx-ico') as HTMLElement).style.color = '#000'; }}
+                                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; (e.currentTarget.querySelector('.ctx-lbl') as HTMLElement).style.color = 'rgba(255,255,255,0.6)'; (e.currentTarget.querySelector('.ctx-ico') as HTMLElement).style.color = Y; }}>
+                                        <span className="ctx-ico" style={{ ...bebas, fontSize: 16, color: Y, transition: 'color 0.12s', width: 16, textAlign: 'center' }}>{icon}</span>
+                                        <span className="ctx-lbl" style={{ ...mono, fontSize: 10, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.15em', textTransform: 'uppercase', transition: 'color 0.12s' }}>{label}</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </>
                 )}
+
+                {/* ── WINDOWS ── */}
+                {windows.map(win => !win.isMinimized && (
+                    <Window key={win.id} id={win.id} title={win.title} component={win.component}
+                        position={win.position} size={win.size} isMaximized={win.isMaximized}
+                        zIndex={win.zIndex} brightness={brightness} isMobile={isMobile}
+                        onClose={closeWindow} onMinimize={minimizeWindow} onMaximize={maximizeWindow}
+                        onBringToFront={bringToFront} onUpdatePosition={updateWindowPosition}
+                        openContactWindow={() => openWindow('contact')} />
+                ))}
+
+                {/* ── SYSTEM MENU ── */}
+                {showSystemMenu && (
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 10000 }}>
+                        <SystemMenu onClose={() => setShowSystemMenu(false)} onSwitchToTerminal={onSwitchToTerminal}
+                            onBrightnessChange={setBrightness} brightness={brightness} />
+                    </div>
+                )}
+
+                {/* ── BRIGHTNESS OVERLAY ── */}
+                <div style={{
+                    position: 'absolute', inset: 0, background: '#000', pointerEvents: 'none', zIndex: 40,
+                    opacity: (100 - brightness) / 100, transition: 'opacity 0.3s'
+                }} />
+
+                {/* ── TASKBAR ── */}
+                <div style={{
+                    position: 'absolute', bottom: 0, left: 0, right: 0, height: 56, borderTop: border3,
+                    background: '#0a0a0a', display: 'flex', alignItems: 'stretch', zIndex: 30
+                }}>
+
+                    {isMobile ? (
+                        <>
+                            <button onClick={() => setShowSystemMenu(!showSystemMenu)}
+                                style={{ flex: 1, background: 'transparent', border: 'none', borderRight: `2px solid rgba(240,206,50,0.15)`, cursor: 'pointer', ...bebas, fontSize: 20, color: Y }}>⚙</button>
+                            <button onClick={() => { const cur = windows.filter(w => !w.isMinimized).at(-1); if (cur) minimizeWindow(cur.id); }}
+                                style={{ flex: 1, background: 'transparent', border: 'none', borderRight: `2px solid rgba(240,206,50,0.15)`, cursor: 'pointer', ...bebas, fontSize: 22, color: 'rgba(255,255,255,0.5)' }}>⌂</button>
+                            <button onClick={() => { const cur = windows.filter(w => !w.isMinimized).at(-1); if (cur) closeWindow(cur.id); }}
+                                style={{ flex: 1, background: 'transparent', border: 'none', cursor: 'pointer', ...bebas, fontSize: 22, color: 'rgba(255,255,255,0.3)' }}>◁</button>
+                        </>
+                    ) : (
+                        <>
+                            {/* Logo */}
+                            <div style={{ padding: '0 20px', borderRight: `3px solid rgba(240,206,50,0.2)`, display: 'flex', alignItems: 'center' }}>
+                                <span style={{ ...bebas, fontSize: 22, color: Y, letterSpacing: '0.12em' }}>OMM</span>
+                            </div>
+
+                            {/* Open windows */}
+                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', overflowX: 'auto' }}>
+                                {windows.filter(w => !w.isMinimized).map(w => (
+                                    <button key={w.id} className="tb-win" onClick={() => bringToFront(w.id)}
+                                        style={{ background: 'transparent', border: `2px solid ${Y}`, padding: '4px 14px', cursor: 'pointer', transition: 'all 0.12s', flexShrink: 0, ...bebas, fontSize: 13, letterSpacing: '0.1em', color: Y }}>
+                                        {w.title.toUpperCase()}
+                                    </button>
+                                ))}
+                                {windows.filter(w => w.isMinimized).map(w => (
+                                    <button key={w.id} className="tb-min" onClick={() => restoreWindow(w.id)}
+                                        style={{ background: 'transparent', border: '2px solid rgba(240,206,50,0.2)', padding: '4px 14px', cursor: 'pointer', transition: 'all 0.12s', flexShrink: 0, ...bebas, fontSize: 13, letterSpacing: '0.1em', color: 'rgba(240,206,50,0.35)' }}>
+                                        {w.title.toUpperCase()} _
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Clock + Sys */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '0 16px', borderLeft: '3px solid rgba(240,206,50,0.2)' }}>
+                                <span style={{ ...mono, fontSize: 12, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em' }}>{time}</span>
+                                <button className="sys-btn" onClick={() => setShowSystemMenu(!showSystemMenu)}
+                                    style={{ background: 'transparent', border: '2px solid rgba(255,255,255,0.15)', padding: '5px 12px', cursor: 'pointer', transition: 'all 0.15s', ...mono, fontSize: 10, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)' }}>
+                                    SYS ⚙
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }

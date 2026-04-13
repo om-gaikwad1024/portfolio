@@ -251,7 +251,7 @@ Type any command to continue...`,
         Hi, I&apos;m Om.
         </div>
         <div className="text-gray-300 mb-4 leading-relaxed">
-          A Software Engineer with expertise in full-stack development, and AI integration.
+          A Software Engineer with expertise in full stack development, and AI integration.
         </div>
         <div className="text-green-400">
           Welcome to my interactive portfolio terminal!

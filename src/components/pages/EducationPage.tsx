@@ -107,7 +107,7 @@ export const EducationPage = ( { openContactWindow }: EducationPageProps) => {
 
         {/* SPECIALIZATIONS */}
         <div className="p-6 md:p-12">
-          <div className="text-[9px] tracking-[0.25em] text-black/35 mb-5" style={{fontFamily:"'Fragment Mono',monospace"}}>// SPECIALIZED LEARNING · 📚</div>
+          <div className="text-[9px] tracking-[0.25em] text-black/35 mb-5" style={{fontFamily:"'Fragment Mono',monospace"}}>// SPECIALIZED LEARNINGx</div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
             {SPECIALIZATIONS.map((spec, i) => (
               <div

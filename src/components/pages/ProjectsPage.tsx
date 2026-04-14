@@ -6,8 +6,8 @@ interface ProjectsPageProps {
 
 const PROJECTS = [
   {
-    id:'intelhub', title:'IntelHub', subtitle:'Collaborative Project Management',
-    category:'fullstack', image:'../images/intelhub.png',
+    id:'codeloom', title:'CodeLoom', subtitle:'Collaborative Project Management',
+    category:'fullstack', image:'../images/Loom.png',
     tagline:'Git like version control meets real-time collaboration',
     technologies:['React','Flask','MongoDB','JWT','WebSocket'],
     description:'A comprehensive collaborative development platform combining version control with real time IDE capabilities.',
@@ -58,18 +58,41 @@ const PROJECTS = [
     ],
   },
   {
-    id:'cyberguard', title:'CyberGuard UAV Shield', subtitle:'Drone Security Platform',
-    category:'security', image:'../images/UAV.png',
-    tagline:'Military grade security for UAV operations',
-    technologies:['Go','Python','Cybersecurity','AES-256','TLS 1.3'],
-    description:'Advanced cybersecurity platform for UAV systems with NATO grade encryption standards.',
+    id:'cyberguard',
+    title:'CyberGuard UAV Shield',
+    subtitle:'Drone Security Platform',
+    category:'security',
+    image:'../images/UAV.png',
+    tagline:'Military-grade security and real-time UAV swarm detection',
+    technologies:['C++','pybind11','Go','Python','Cybersecurity','AES-256','TLS 1.3','PKI','HSM'],
+    description:'Engineered a high-performance UAV cybersecurity platform with zero-trust architecture and sub-millisecond swarm detection capabilities.',
     features:[
-      {title:'Zero Trust Authentication', description:'Zero trust authentication with PKI and HSM key management', icon:'shield', impact:'Maximum security'},
-      {title:'Multi-Tenant Cloud', description:'Secure cloud layer for defense, aviation, and infra sectors', icon:'cloud', impact:'Secure sharing'},
-      {title:'Threat Dashboard', description:'Real time threat dashboard for FlytX cockpit displays with pilot alerts', icon:'radar', impact:'Instant alerts'},
-      {title:'NATO-Grade Encryption', description:'AES-256 + TLS 1.3 encryption across RESTful microservices', icon:'encrypt', impact:'Military grade'},
+      {
+        title:'High-Speed Swarm Detection',
+        description:'Engineered a C++ pybind11 spatial engine replacing NumPy loops with optimized haversine and batch distance matrix computations for sub-millisecond UAV swarm detection',
+        icon:'radar',
+        impact:'Ultra-low latency'
+      },
+      {
+        title:'Zero Trust Authentication',
+        description:'Engineered zero-trust authentication architecture using PKI and HSM-backed key management',
+        icon:'shield',
+        impact:'Maximum security'
+      },
+      {
+        title:'Multi-Tenant Cloud',
+        description:'Architected a secure multi-tenant cloud layer for defense, aviation, and critical infrastructure sectors',
+        icon:'cloud',
+        impact:'Secure sharing'
+      },
+      {
+        title:'NATO-Grade Encryption',
+        description:'Implemented AES-256 encryption and TLS 1.3 across secure RESTful microservices',
+        icon:'encrypt',
+        impact:'Military-grade'
+      },
     ],
-  },
+}
 ];
 
 const CATEGORIES = [

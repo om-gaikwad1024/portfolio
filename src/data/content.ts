@@ -12,7 +12,7 @@ Background:
 - Specialized in building modern web applications, collaborative tools, and AI powered solutions
 - Winner of multiple hackathons including Anveshana Hack for Hire and RRCE Web Designing competition
 - Graduated in M.C.A with specialization in Data Analytics from PES University
-- Strong foundation in React, Python, and enterprise technologies
+- Strong foundation in NextJS, React, Python, and enterprise technologies
 
 My passion lies in creating innovative solutions that solve real world problems, from autonomous AI agents to collaborative development platforms.
 
@@ -21,16 +21,16 @@ Feel free to explore more using the 'projects', 'skills', or 'contact' commands!
   projects: ` Projects:
 
 1. CyberGuard UAV Shield
-   Military grade cybersecurity platform for UAV systems with NATO grade encryption standards
-   Technologies: Go, Python, Cybersecurity, AES-256, TLS 1.3, PKI, HSM
-   Features: Zero trust authentication with PKI and HSM key management, Multi tenant secure cloud layer for defense/aviation/infrastructure sectors, Real time threat dashboard for FlytX cockpit displays with pilot alerts, Secure RESTful microservices with NATO grade communication standards
+   Engineered a high-performance spatial computation engine and secure cloud architecture for defense-grade applications
+Technologies: C++, pybind11, PKI, HSM, AES-256, TLS 1.3, REST APIs, Cloud Computing
+Features: Optimized UAV swarm detection by replacing NumPy loops with a C++ pybind11 engine using haversine and batch distance matrix for sub-millisecond performance. Designed zero-trust authentication architecture leveraging Public Key Infrastructure (PKI) and Hardware Security Modules (HSM) for secure key management. Built a multi-tenant secure cloud layer tailored for defense, aviation, and critical infrastructure use cases. Implemented secure RESTful microservices with AES-256 encryption and TLS 1.3 for end-to-end encrypted communication
 
 2. Autonomous RL Agent for FPS Games (ARLA)
    Developed autonomous RL agent using PPO algorithm to play DOOM, training on custom environment
    Technologies: Python, Reinforcement Learning, ViZDoom, PPO, Doom Builder
    Features: Custom game environment using Doom Builder with multiplayer support for 8 players, Real time AI decision-making through ViZDoom API, Web interface for game configuration and real time performance monitoring, Dynamic reward system for agent training based on combat outcomes and health management
 
-3. IntelHub - Collaborative Project Management
+3. CodeLoom - Collaborative Project Management
    Git like version control system with branch/merge functionality and real time collaboration
    Technologies: React, Flask, MongoDB, JWT, WebSocket
    Features: Real time collaborative IDE with code sharing and live editing using WebSocket communication, Role based access control system with JWT authentication, Project snapshot system enabling rollback to any previous version within 2 click workflow
@@ -46,18 +46,17 @@ Feel free to explore more using the 'projects', 'skills', or 'contact' commands!
    Features: Server side rendering for attendance tracking, grade management, and timetable scheduling, Role based access control using Django's built in authentication system, Extended functionality with custom Django templates and vanilla JavaScript for dynamic UI elements
 `,
 
-
-
- skills: ` Technical Skills:
+  skills: ` Technical Skills:
 
 Programming Languages:
 - JavaScript/TypeScript
 - Python
 - SQL
+- CPP
 - HTML/CSS
 
 Frontend:
-- React/TypeScript
+- React/TypeScript/NextJS
 - SharePoint Framework (SPFx)
 - Bootstrap/Tailwind
 - Microsoft Fluent Design System
@@ -71,6 +70,7 @@ Backend:
 Databases & Tools:
 - MongoDB/SQLite
 - Firebase
+- Supabase
 - Git/GitHub
 - VS Code/IntelliJ
 
@@ -127,7 +127,6 @@ Type 'projects' to see my projects or 'skills' to view my technical skills.`,
 • Modern Web Development Frameworks
 • Data Analytics and Visualization`,
 
-
   leadership: ` Leadership & Innovation:
 
    Technical Leadership:
@@ -161,5 +160,5 @@ Type 'projects' to see my projects or 'skills' to view my technical skills.`,
    Philosophy:
 "Great leaders don't create followers, they create more leaders.
 I believe in empowering others through knowledge sharing and
-collaborative problem solving."`
+collaborative problem solving."`,
 };

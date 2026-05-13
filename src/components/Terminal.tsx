@@ -33,7 +33,7 @@ const Terminal = forwardRef<TerminalRef, TerminalProps>(({ onTypingChange }, ref
   const [isMobile, setIsMobile] = useState(false);
 
   const commands = {
-    help: () => `Available commands:
+    help: () => ` Available commands:
 about       - Learn about me
 projects    - View my projects
 skills      - See my technical skills

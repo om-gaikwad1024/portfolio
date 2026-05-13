@@ -7,27 +7,27 @@ interface SkillsPageProps {
 const SKILL_GROUPS = [
   {
     id: 'frontend', label: 'FRONTEND', index: '01',
-    skills: ['React','TypeScript','JavaScript','HTML/CSS','Bootstrap','Tailwind','SharePoint SPFx','Microsoft Fluent UI'],
+    skills: ['React / Next.js 14','React Native (Expo)','Three.js','TypeScript','JavaScript','Tailwind CSS','NativeWind','Recharts','Leaflet.js','Spline','Microsoft Fluent UI','Bootstrap'],
     desc: 'Building pixel perfect, performant interfaces',
   },
   {
     id: 'backend', label: 'BACKEND', index: '02',
-    skills: ['Flask','Django','Spring Boot','REST APIs','JWT Auth','WebSocket','Node.js'],
+    skills: ['Go (Gorilla Mux / WebSocket)','Flask / Django','Node.js / Express','Spring Boot','REST APIs','WebSockets','Socket.IO','JSON-RPC / SSE','JWT Auth','Prisma'],
     desc: 'Architecting robust, scalable server side systems',
   },
   {
     id: 'aiml', label: 'AI / ML', index: '03',
-    skills: ['Reinforcement Learning','PPO Algorithm','ViZDoom','Pandas','NumPy','Matplotlib','Jupyter','Random Forest','Gemini API'],
+    skills: ['Claude API','Azure OpenAI','Gemini API','MCP Server (JSON-RPC + SSE)','XGBoost','Random Forest','Stable Baselines3 (PPO)','PyTorch','Scikit-learn','TF-IDF','CountVectorizer','PCA','ViZDoom','Prompt Engineering'],
     desc: 'Training agents, building intelligent systems',
   },
   {
     id: 'tools', label: 'TOOLS & DB', index: '04',
-    skills: ['MongoDB','SQLite','Firebase','Supabase','Git/GitHub','VS Code','IntelliJ','Figma','Unix Shell','Python','SQL'],
+    skills: ['PostgreSQL / Supabase','MongoDB / GridFS','Firebase Firestore','SQLite','Prisma','AES-256-GCM / TLS 1.3','PKI / JWT / RBAC','SharePoint SPFx','Microsoft Graph API','Git / GitHub','Vercel / Cloudinary','TensorBoard','Figma / Spline'],
     desc: 'Full spectrum of dev tools and data systems',
   },
 ];
 
-const LANGS = ['JavaScript / TypeScript','Python','SQL','HTML / CSS','C++'];
+const LANGS = ['Python', 'Go', 'TypeScript / JavaScript', 'Java', 'C++', 'SQL', 'HTML / CSS'];
 
 export const SkillsPage = ({ openContactWindow }: SkillsPageProps) => {
   const [hovered, setHovered] = useState<string|null>(null);

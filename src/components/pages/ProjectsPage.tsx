@@ -6,100 +6,188 @@ interface ProjectsPageProps {
 
 const PROJECTS = [
   {
-    id:'codeloom', title:'CodeLoom', subtitle:'Collaborative Project Management',
-    category:'fullstack', image:'../images/Loom.png',
-    tagline:'Git like version control meets real-time collaboration',
-    technologies:['React','Flask','MongoDB','JWT','WebSocket'],
-    description:'A comprehensive collaborative development platform combining version control with real time IDE capabilities.',
-    features:[
-      {title:'Version Control System', description:'Git like version control with branch/merge functionality', icon:'branch', impact:'Seamless collaboration'},
-      {title:'Real time Collaborative IDE', description:'Live code sharing and editing using WebSocket communication', icon:'code', impact:'Live code sharing'},
-      {title:'JWT Authentication', description:'Role based access control with JWT authentication', icon:'lock', impact:'Secure access control'},
-      {title:'Project Snapshots', description:'Rollback to any previous version within 2 click workflow', icon:'snapshot', impact:'Easy version recovery'},
+    id: 'mindos',
+    title: 'MindOS',
+    subtitle: 'Personal AI Operating System',
+    category: 'ai',
+    image: '../images/mindos.png',
+    tagline: 'A personal OS with 29 live MCP tools and Claude wired into your real data',
+    technologies: ['Next.js 14','TypeScript','PostgreSQL','Supabase','Prisma','Claude API','MCP Server','Tailwind CSS','Recharts','Vercel'],
+    description: 'A personal operating system consolidating tasks, learnings, logs, finances, and goals — with Claude connected via a live MCP integration giving context-aware AI advice across sessions.',
+    features: [
+      { title: 'Custom MCP Server', description: '29 live tools with real Postgres read/write access across a 17-table schema via JSON-RPC over SSE', icon: 'server', impact: 'Live AI context' },
+      { title: 'Today Dashboard', description: 'Daily command center with Kanban, streak counters, and a 91-day contribution heatmap', icon: 'calendar', impact: 'At-a-glance clarity' },
+      { title: 'AI Reflections', description: 'Evening journal with Claude reflections, auto-summaries for learning vault entries, and weekly progress summaries', icon: 'brain', impact: 'Persistent AI memory' },
+      { title: 'Finance Tracker', description: 'Expense tracker with 6-month charts, RACI matrix, quick-capture bar, and drag-and-drop Kanban with WIP limits', icon: 'chart', impact: 'Full life OS' },
     ],
   },
   {
-    id:'arla', title:'ARLA', subtitle:'Autonomous RL Agent for FPS Games',
-    category:'ai', image:'../images/arla.png',
-    tagline:'AI that learns to play DOOM through reinforcement learning',
-    technologies:['Python','Reinforcement Learning','ViZDoom','PPO'],
-    description:'An autonomous agent using advanced RL algorithms to master FPS gameplay in custom environments.',
-    features:[
-      {title:'PPO Algorithm', description:'Autonomous RL agent using PPO algorithm to play DOOM on custom environment', icon:'cpu', impact:'Smart AI gameplay'},
-      {title:'Custom Game Environment', description:'Doom Builder environment with multiplayer support for 8 players', icon:'grid', impact:'Multiplayer AI support'},
-      {title:'Web Monitoring', description:'Web interface for game configuration and real time performance monitoring', icon:'chart', impact:'Live tracking'},
-      {title:'Dynamic Reward System', description:'Reward system based on combat outcomes, health management, etc', icon:'bolt', impact:'Adaptive learning'},
+    id: 'ciphertrust',
+    title: 'CipherTrust',
+    subtitle: 'Secure Data Pipeline — CyberGuard UAV Shield',
+    category: 'security',
+    image: '../images/UAV.png',
+    tagline: 'Military-grade multi-tenant encryption with sub-50ms real-time threat feeds',
+    technologies: ['Go 1.21+','Gorilla Mux','Gorilla WebSocket','AES-256-GCM','JWT','PKI','React 18','Vite','Tailwind CSS'],
+    description: 'Production-ready multi-tenant encryption and data protection system securing real-time drone threat data across military, civil aviation, and critical infrastructure domains.',
+    features: [
+      { title: 'AES-256-GCM Encryption', description: 'End-to-end encryption with automated key rotation and HSM-protected key management architecture', icon: 'encrypt', impact: 'Military-grade' },
+      { title: 'Zero Trust PKI Auth', description: 'Zero Trust authentication with JWT, RBAC, and multi-tenant isolation using dedicated encryption keys per tenant', icon: 'shield', impact: 'Maximum security' },
+      { title: 'Real-Time WebSocket', description: 'Sub-50ms WebSocket threat feeds with policy-based cross-tenant sharing and configurable PII anonymization', icon: 'radar', impact: 'Ultra-low latency' },
+      { title: 'Compliance Ready', description: 'Immutable audit logging built to ITAR, NDAA, GDPR, SOC 2, and ISO 27001 constraints', icon: 'lock', impact: 'Enterprise compliant' },
     ],
   },
   {
-    id:'accompay', title:'Accompay AI', subtitle:'AI Therapy & Mood Prediction',
-    category:'ai', image:'../images/accompany.png',
-    tagline:'Personalized AI therapy through character personas',
-    technologies:['React','Flask','Gemini API','Random Forest','Python'],
-    description:'An AI powered therapy platform providing personalized support through multiple character personas.',
-    features:[
-      {title:'Multi-Persona AI Therapy', description:'Gemini API with predefined AI personas (Batman, Elsa, Sibling)', icon:'persona', impact:'Personalized support'},
-      {title:'Interactive Chat Interface', description:'Chat interface with distinct AI avatars for therapeutic conversations', icon:'chat', impact:'Engaging interaction'},
-      {title:'Mindmetrics', description:'Emotion prediction based on brainwave data using random forest model', icon:'brain', impact:'Mood detection'},
-      {title:'Dynamic Task Suggestions', description:'Mood enhancing tasks based on predicted emotional state', icon:'sparkle', impact:'Adaptive recommendations'},
+    id: 'arla',
+    title: 'ARLA',
+    subtitle: 'Autonomous RL Agent for FPS Games',
+    category: 'ai',
+    image: '../images/arla.png',
+    tagline: 'AI that learns to play DOOM through reinforcement learning from raw pixels',
+    technologies: ['Python','PyTorch','Stable Baselines3','PPO','ViZDoom','OpenAI Gym','OpenCV','React.js','Flask','TensorBoard'],
+    description: 'A self-learning RL agent that plays classic DOOM autonomously via PPO algorithm trained from raw pixel input, with a React dashboard for monitoring training sessions.',
+    features: [
+      { title: 'PPO from Raw Pixels', description: 'CNN-based feature extraction from stacked screen buffer frames with no hand-crafted state representation', icon: 'cpu', impact: 'True pixel learning' },
+      { title: 'Custom Reward Shaping', description: 'Reward system across kills, health pickups, damage dealt, survival time, and idle penalties for adaptive learning', icon: 'bolt', impact: 'Adaptive learning' },
+      { title: 'Custom DOOM Map', description: 'DoomBuilder environment with 8 multiplayer spawn points. Human vs Agent and Agent vs Bots modes', icon: 'grid', impact: 'Multiplayer AI' },
+      { title: 'Live Dashboard', description: 'React + Flask dashboard with Train, Test, and Play tabs plus live TensorBoard integration for monitoring', icon: 'chart', impact: 'Real-time tracking' },
     ],
   },
   {
-    id:'erp', title:'College ERP', subtitle:'Management System',
-    category:'fullstack', image:'../images/ERP.png',
-    tagline:'Complete academic management solution',
-    technologies:['Django','SQLite','HTML/CSS','JavaScript'],
-    description:'A comprehensive academic management system built with Django MVT architecture.',
-    features:[
-      {title:'MVT Architecture', description:'Django MVT architecture with SQLite database', icon:'layers', impact:'Scalable design'},
-      {title:'Server side Rendering', description:'Attendance tracking, grade management, timetable scheduling', icon:'calendar', impact:'Fast performance'},
-      {title:'Access Control', description:"Role based access via Django's built in authentication", icon:'key', impact:'Secure access'},
-      {title:'Dynamic UI', description:'Custom Django templates and vanilla JavaScript for dynamic elements', icon:'palette', impact:'Interactive interface'},
+    id: 'accompany',
+    title: 'AccompanyAI',
+    subtitle: 'Mental Wellness Platform',
+    category: 'ai',
+    image: '../images/accompany.png',
+    tagline: 'EEG mood prediction meets AI therapy with personality-driven companions',
+    technologies: ['Scikit-learn','Random Forest','Gemini','Flask','Flask-SocketIO','MongoDB','JWT','React 18','Socket.IO','Spline'],
+    description: 'A full stack mental health companion combining ML, generative AI, and real-time peer collaboration for personalized emotional support.',
+    features: [
+      { title: 'EEG Mood Prediction', description: 'Random Forest model trained on Alpha, Beta, Gamma, Delta brainwave band values for real-time mood classification', icon: 'brain', impact: 'Biometric detection' },
+      { title: 'Multi-Persona AI Therapy', description: '5 personality-driven companions — Batman, Elsa, Guardian, Sibling, Friend — powered by Gemini', icon: 'persona', impact: 'Personalized support' },
+      { title: 'Collaborative Growth', description: 'Real-time peer chat via Socket.IO with a shared virtual tree that grows as users achieve milestones', icon: 'sparkle', impact: 'Social wellness' },
+      { title: 'Gratitude Journal', description: 'Daily gratitude journaling with streak tracking and Therapist Finder with Google Maps integration', icon: 'calendar', impact: 'Habit building' },
     ],
   },
   {
-    id:'cyberguard',
-    title:'CyberGuard UAV Shield',
-    subtitle:'Drone Security Platform',
-    category:'security',
-    image:'../images/UAV.png',
-    tagline:'Military-grade security and real-time UAV swarm detection',
-    technologies:['C++','pybind11','Go','Python','Cybersecurity','AES-256','TLS 1.3','PKI','HSM'],
-    description:'Engineered a high-performance UAV cybersecurity platform with zero-trust architecture and sub-millisecond swarm detection capabilities.',
-    features:[
-      {
-        title:'High-Speed Swarm Detection',
-        description:'Engineered a C++ pybind11 spatial engine replacing NumPy loops with optimized haversine and batch distance matrix computations for sub-millisecond UAV swarm detection',
-        icon:'radar',
-        impact:'Ultra-low latency'
-      },
-      {
-        title:'Zero Trust Authentication',
-        description:'Engineered zero-trust authentication architecture using PKI and HSM-backed key management',
-        icon:'shield',
-        impact:'Maximum security'
-      },
-      {
-        title:'Multi-Tenant Cloud',
-        description:'Architected a secure multi-tenant cloud layer for defense, aviation, and critical infrastructure sectors',
-        icon:'cloud',
-        impact:'Secure sharing'
-      },
-      {
-        title:'NATO-Grade Encryption',
-        description:'Implemented AES-256 encryption and TLS 1.3 across secure RESTful microservices',
-        icon:'encrypt',
-        impact:'Military-grade'
-      },
+    id: 'anvaya',
+    title: 'Anvaya',
+    subtitle: '3D Virtual AYUSH Garden',
+    category: 'fullstack',
+    image: '../images/anvaya.png',
+    tagline: 'Explorable 3D medicinal plant garden rooted in India"s AYUSH traditions',
+    technologies: ['Three.js (r171)','GLTFLoader','RGBE HDR','Vite','React 18','Tailwind CSS','Node.js','Express','MongoDB','Leaflet.js','Cloudinary'],
+    description: 'An interactive 3D web experience for exploring a virtual medicinal plant garden with third-person character movement and an animated Yoga character.',
+    features: [
+      { title: '3D Garden World', description: 'Fully explorable garden with third-person WASD + mouse orbit movement. Click any plant to get Ayurvedic uses', icon: 'grid', impact: 'Immersive exploration' },
+      { title: 'Animated Yoga', description: 'Animated character with real-time Surya Namaskar playback using Three.js skeletal animation', icon: 'sparkle', impact: 'Cultural experience' },
+      { title: 'Plant Catalog', description: 'Full CRUD catalog filterable by AYUSH system with JWT auth and protected routes', icon: 'layers', impact: 'Rich knowledge base' },
+      { title: 'Spline Landing', description: 'Spline 3D landing page with graceful mobile fallback and Cloudinary-powered media storage', icon: 'palette', impact: 'Premium first impression' },
     ],
-}
+  },
+  {
+    id: 'waterquality',
+    title: 'Water Quality AI',
+    subtitle: 'Community Groundwater Assessor',
+    category: 'ai',
+    image: '../images/water.png',
+    tagline: 'XGBoost-powered contamination classifier with real-time Leaflet heatmaps',
+    technologies: ['XGBoost','Scikit-learn','PCA','StandardScaler','Flask','React 18','Recharts','Leaflet.js','SQLite'],
+    description: 'A full stack web app for communities to submit groundwater samples, classify them via a trained XGBoost model, and visualize contamination risk on an interactive heatmap.',
+    features: [
+      { title: 'XGBoost Classifier', description: 'Classifies water into irrigation categories (C1S1 to C4S4) using 16 chemical parameters with PCA-reduced inference', icon: 'brain', impact: 'Accurate ML scoring' },
+      { title: 'Live Heatmap', description: 'Leaflet.js contamination heatmap with real-time risk intensity overlay from submitted samples', icon: 'chart', impact: 'Visual risk mapping' },
+      { title: 'Spread Estimator', description: 'Haversine-based contaminant spread estimator projecting contamination radius over 7 days', icon: 'radar', impact: 'Predictive safety' },
+      { title: 'Admin Dashboard', description: 'Charts, trend analysis, and 3 years of real Tamil Nadu groundwater CSV data (2018–2020) as training source', icon: 'layers', impact: 'Data-driven insights' },
+    ],
+  },
+  {
+    id: 'eventhive',
+    title: 'EventHive BLR',
+    subtitle: 'Event Discovery & Ticketing App',
+    category: 'fullstack',
+    image: '../images/eventhive.png',
+    tagline: 'Mobile-first event discovery with real-time Firestore ticketing and QR passes',
+    technologies: ['React Native','Expo','TypeScript','Firebase Auth','Firestore','Leaflet.js','react-native-qrcode-svg','NativeWind'],
+    description: 'A full stack mobile app for Bangaloreans to discover, RSVP, and get tickets to events across the city with an interactive dark mode map.',
+    features: [
+      { title: 'Interactive Map', description: 'Dark mode Leaflet map via WebView with bidirectional postMessage bridging for seamless native-web comms', icon: 'grid', impact: 'Spatial discovery' },
+      { title: 'Real-Time Ticketing', description: 'Firestore ticketing with atomic increments to prevent race conditions during high-demand RSVPs', icon: 'bolt', impact: 'Race-condition safe' },
+      { title: 'QR Code Passes', description: 'Auto-generated scannable QR code passes attached to each confirmed ticket and stored in profile history', icon: 'qr', impact: 'Seamless entry' },
+      { title: 'Smart Search', description: 'Search and filter by category, title, and venue with full ticket history and stats in profile screen', icon: 'chart', impact: 'Fast discovery' },
+    ],
+  },
+  {
+    id: 'codeloom',
+    title: 'CodeLoom',
+    subtitle: 'Collaborative Project Management',
+    category: 'fullstack',
+    image: '../images/Loom.png',
+    tagline: 'Git-based version control meets real-time IDE with pre-commit security scanning',
+    technologies: ['Flask','Python','MongoDB','PyMongo','GridFS','React','VirusTotal API','RBAC','scrypt','pygit2'],
+    description: 'A threat intelligence-driven collaborative coding platform combining Git-based version control, real-time IDE, and pre-commit security scanning.',
+    features: [
+      { title: 'Version Control', description: 'Git-based repository management: create, clone, branch, commit, and rollback. Merge request workflow with owner review', icon: 'branch', impact: 'Full Git workflow' },
+      { title: 'Real-Time Collaboration', description: 'Multi-user collaborative coding with instant workspace sync powered by WebSocket communication', icon: 'code', impact: 'Live code sharing' },
+      { title: 'Security Scanning', description: 'Pre-commit security checks via VirusTotal API — code cannot merge until it passes threat analysis', icon: 'shield', impact: 'Zero malicious merges' },
+      { title: 'RBAC + GridFS', description: 'Owner vs Collaborator permission sets with MongoDB GridFS for file storage inside repositories', icon: 'lock', impact: 'Granular access control' },
+    ],
+  },
+  {
+    id: 'redgit',
+    title: 'RedGit',
+    subtitle: 'Git Implementation in Go',
+    category: 'fullstack',
+    image: '../images/redgit.png',
+    tagline: 'Fully functional Git built in Go from scratch — no external libraries',
+    technologies: ['Go','stdlib only','SHA-1','zlib compression','Content-Addressable Storage','Binary Index Format'],
+    description: 'A fully functional Git implementation written in Go from scratch with no external Git libraries — covering objects, DAG commits, branching, and three-way merge.',
+    features: [
+      { title: 'Object Storage', description: 'Content-addressable blob, tree, and commit objects stored by SHA-1 hash with zlib compression', icon: 'layers', impact: 'True Git internals' },
+      { title: 'DAG Commit Log', description: 'Directed acyclic graph of commits with log and log --oneline, branch create, checkout, and checkout -b', icon: 'git', impact: 'Full history traversal' },
+      { title: 'Three-Way Merge', description: 'Three-way merge algorithm with conflict detection and conflict markers compatible with real Git', icon: 'branch', impact: 'Real merge semantics' },
+      { title: 'Binary Index', description: 'Binary format staging index compatible with real Git, enabling real-world interoperability', icon: 'code', impact: 'Git-compatible format' },
+    ],
+  },
+  {
+    id: 'erp',
+    title: 'College ERP',
+    subtitle: 'Academic Management System',
+    category: 'fullstack',
+    image: '../images/ERP.png',
+    tagline: 'Complete academic lifecycle management for students, teachers, and admins',
+    technologies: ['Django','SQLite','Django AbstractUser','Django Admin','Djoser','Django Signals','Django Templates'],
+    description: 'A full-featured college ERP handling the complete academic lifecycle with role-based views for students, teachers, and admins.',
+    features: [
+      { title: 'MVT Architecture', description: 'Django MVT with SQLite, AbstractUser roles, and Django Signals auto-creating marks and attendance slots on assignment', icon: 'layers', impact: 'Automated scaffolding' },
+      { title: 'Attendance System', description: 'Daily per-class attendance marking with 75% threshold calculator and visual weekly timetable', icon: 'calendar', impact: 'Threshold tracking' },
+      { title: 'Marks Management', description: 'Marks across 3 internal tests, 2 events, and semester end exam with auto-calculated CIE scores', icon: 'chart', impact: 'Auto-calculated grades' },
+      { title: 'Admin Tools', description: 'Custom admin semester reset tool for bulk attendance regeneration and unit tests for models and views', icon: 'key', impact: 'Bulk operations' },
+    ],
+  },
+  {
+    id: 'movierec',
+    title: 'Movie Recommender',
+    subtitle: 'Content-Based + Sentiment Analysis',
+    category: 'ai',
+    image: '../images/movies.png',
+    tagline: 'Cosine similarity recommendations with live IMDb sentiment classification',
+    technologies: ['Python','Flask','Scikit-learn','CountVectorizer','cosine_similarity','TF-IDF','BeautifulSoup4','TMDB API','Bootstrap 5','jQuery','AJAX'],
+    description: 'A content-based movie recommendation system that suggests similar films and classifies scraped IMDb reviews as positive or negative in real time.',
+    features: [
+      { title: 'Content-Based Filtering', description: 'CountVectorizer and cosine similarity across genres, cast, and director features with real-time autocomplete', icon: 'chart', impact: 'Accurate recommendations' },
+      { title: 'TMDB Integration', description: 'TMDB API integration for posters, metadata, and cast information with no full-page reloads via AJAX', icon: 'sparkle', impact: 'Rich metadata' },
+      { title: 'Sentiment Classifier', description: 'IMDb review scraping via BeautifulSoup4 with per-review sentiment classification using a pre-trained NLP model', icon: 'brain', impact: 'Live review scoring' },
+      { title: 'AJAX-Powered UI', description: 'Dynamic results with jQuery AJAX — recommendations and sentiment load without page refresh', icon: 'bolt', impact: 'Snappy experience' },
+    ],
+  },
 ];
 
 const CATEGORIES = [
-  {id:'all', label:'ALL PROJECTS', count: PROJECTS.length},
-  {id:'fullstack', label:'FULL STACK', count: PROJECTS.filter(p=>p.category==='fullstack').length},
-  {id:'ai', label:'AI / ML', count: PROJECTS.filter(p=>p.category==='ai').length},
-  {id:'security', label:'SECURITY', count: PROJECTS.filter(p=>p.category==='security').length},
+  { id: 'all', label: 'ALL PROJECTS', count: PROJECTS.length },
+  { id: 'fullstack', label: 'FULL STACK', count: PROJECTS.filter(p => p.category === 'fullstack').length },
+  { id: 'ai', label: 'AI / ML', count: PROJECTS.filter(p => p.category === 'ai').length },
+  { id: 'security', label: 'SECURITY', count: PROJECTS.filter(p => p.category === 'security').length },
 ];
 
 // Premium SVG icons — no emoji, all inline SVG matching the theme
@@ -369,7 +457,8 @@ export const ProjectsPage = ({ openContactWindow }: ProjectsPageProps) => {
                       <span key={tech} className={`text-[9px] px-2 py-0.5 border tracking-[0.1em] transition-colors ${selected===project.id?'border-black/30 text-black/60':'border-white/10 text-white/25 group-hover:border-[#f0ce32]/20 group-hover:text-[#f0ce32]/40'}`} style={{fontFamily:"'Fragment Mono',monospace"}}>{tech}</span>
                     ))}
                   </div>
-                  <div className={`mt-4 text-[12px] tracking-[0.1em] transition-all ${selected===project.id?'text-black opacity-100':'text-[#f0ce32]/0 group-hover:text-[#f0ce32]/50'}`} style={{fontFamily:"'Fragment Mono',monospace"}}>{selected===project.id?'▲ CLOSE':'▼ EXPAND'}</div>
+                  <div className={`mt-4 text-[12px] tracking-[0.1em] transition-all ${selected===project.id?'text-black opacity-100':'text-[#f0ce32]/0 group-hover:text-[#f0ce32]/50'}`} style={{fontFamily:"'Fragment Mono',monospace"}}>{selected===project.id?'▲ Details are available at the bottom of the page.':'▼ EXPAND'}</div>
+                  
                 </div>
               </div>
             ))}

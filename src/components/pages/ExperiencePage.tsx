@@ -6,17 +6,34 @@ interface ExperiencePageProps {
 
 const EXPERIENCES = [
   {
+    id: 'freelance',
+    role: 'Full Stack & AI/ML Developer',
+    company: 'Freelance',
+    type: 'Self-Employed',
+    period: 'Oct 2025 – Present',
+    year: '2026',
+    stack: ['Next.js 14','Go','React Native','Flask','PostgreSQL','Claude API','MCP Server','Prisma','Supabase','TypeScript','Socket.IO','Expo','XGBoost','Random Forest','Gemini'],
+    bullets: [
+      'Built and deployed production-grade full stack applications across web, mobile, and backend domains spanning Next.js 14, Go, React Native with Expo, and Flask — each with independently designed database schemas, auth systems, and deployment pipelines',
+      'Architected a custom MCP server using JSON-RPC over SSE exposing 29 live tools that give Claude real-time read/write access to a production PostgreSQL database, enabling context-aware AI responses grounded in actual user data across a 17-table schema',
+      'Engineered a multi-tenant encrypted data pipeline in Go with AES-256-GCM end-to-end encryption, Zero Trust PKI auth, RBAC, and real-time WebSocket threat feeds at sub-50ms latency, designed against ITAR, NDAA, GDPR, and SOC 2 compliance constraints',
+      'Trained and deployed a Random Forest classifier on EEG brainwave band values for real-time mental state prediction, and built an end-to-end XGBoost ML pipeline for groundwater quality classification across 16 chemical parameters with PCA-reduced inference',
+      'Shipped production applications across security, AI, mobile, 3D web, environmental intelligence, and productivity domains as a solo developer owning every layer from schema to deployment',
+    ],
+    status: 'ACTIVE',
+  },
+  {
     id: 'cubiclogics',
-    role: 'Software Developer Intern',
+    role: 'React TypeScript & SPFx Developer',
     company: 'Cubiclogics',
     type: 'On-Campus Internship',
     period: 'Mar 2025 – Aug 2025',
     year: '2025',
-    stack: ['React','TypeScript','SPFx','SharePoint','Microsoft Fluent UI'],
+    stack: ['React','TypeScript','SPFx','SharePoint','Azure OpenAI','Microsoft Fluent UI','Microsoft Graph API'],
     bullets: [
-      'Developing SharePoint Framework (SPFx) solutions using React TypeScript for enterprise applications',
-      'Building modern web parts and extensions for Microsoft SharePoint Online environments',
-      'Implementing responsive UI components following Microsoft Fluent Design System principles',
+      'Built file upload routes and React TypeScript frontend components integrated with Azure OpenAI APIs to deliver AI-powered PDF summarization within SharePoint Online for enterprise clients',
+      'Developed SPFx web parts surfacing AI-generated document insights directly inside Microsoft 365 environments',
+      'Implemented responsive UI components following Microsoft Fluent Design System principles across production SharePoint tenants',
     ],
     status: 'COMPLETED',
   },
@@ -29,9 +46,9 @@ const EXPERIENCES = [
     year: '2025',
     stack: ['React','Java','Spring Boot','REST APIs','Agile'],
     bullets: [
-      'Developed responsive front end components using React for enterprise web applications',
-      'Supported backend development using Spring Boot for REST API creation and maintenance',
-      'Collaborated with cross functional teams in an Agile environment to deliver production ready features',
+      'Built a full CRM application with React and Java Spring Boot, developing RESTful APIs integrated with frontend components for real-time customer pipeline management',
+      'Supported backend development using Spring Boot for REST API creation and maintenance across enterprise web applications',
+      'Collaborated in an Agile team environment, participating in sprint planning and delivering production-ready features on schedule',
     ],
     status: 'COMPLETED',
   },
@@ -71,7 +88,7 @@ export const ExperiencePage = ({ openContactWindow }: ExperiencePageProps) => {
           <div className="hidden md:block w-px h-16 bg-[#f0ce32]/20" />
           <div className="hidden md:flex flex-col gap-1">
             <div className="text-[9px] tracking-[0.25em] text-[#f0ce32]/40" style={{fontFamily:"'Fragment Mono',monospace"}}>// TOTAL EXPERIENCE</div>
-            <div className="text-[28px] text-white tracking-[0.04em]" style={{fontFamily:"'Bebas Neue',sans-serif"}}>2 POSITIONS</div>
+            <div className="text-[28px] text-white tracking-[0.04em]" style={{fontFamily:"'Bebas Neue',sans-serif"}}>3 POSITIONS</div>
             <div className="text-[11px] text-white/30 font-light">Enterprise · Full stack · React · Java</div>
           </div>
         </div>

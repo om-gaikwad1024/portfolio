@@ -213,7 +213,7 @@ export const FolderPage = () => {
                 </div>
                 <p className="text-[13px] font-light text-white/45 leading-[1.8] mb-6">
                   I can build a fully functional file system, drag-and-drop, file operations,
-                  and much more. If you're looking for someone who turns ambitious ideas into reality —
+                  and much more. If you're looking for someone who turns ambitious ideas into reality
                 </p>
                 <div className="flex flex-col gap-3">
                   <button
@@ -267,12 +267,7 @@ export const FolderPage = () => {
           </div>
         )}
 
-        {/* TASKBAR */}
-        <div className="h-[52px] border-t-[3px] border-[#f0ce32]/30 bg-black flex items-stretch flex-shrink-0 relative z-10">
-          {['ABOUT','PROJECTS','SKILLS','EXPERIENCE','CONTACT'].map(item => (
-            <div key={item} className="flex-1 flex items-center justify-center text-[11px] md:text-[13px] tracking-[0.1em] cursor-pointer border-r border-white/[0.06] last:border-r-0 transition-all duration-150 hover:bg-[#f0ce32] hover:text-black text-white/25" style={{ fontFamily: "'Bebas Neue',sans-serif" }}>{item}</div>
-          ))}
-        </div>
+        
       </div>
     </>
   );
